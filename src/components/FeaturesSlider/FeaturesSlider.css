@@ -3,14 +3,13 @@
   background: var(--white);
 }
 
-.features__container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
 .features__swiper {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
   padding-bottom: 50px !important;
+  box-sizing: border-box;
 }
 
 .features__swiper .swiper-button-next,
@@ -72,10 +71,6 @@
     padding: 80px 0;
   }
 
-  .features__container {
-    padding: 0 40px;
-  }
-
   .features__card {
     padding: 40px 20px;
   }
@@ -84,9 +79,5 @@
 @media (min-width: 1024px) {
   .features {
     padding: 100px 0;
-  }
-
-  .features__container {
-    padding: 0 60px;
   }
 }

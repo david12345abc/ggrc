@@ -37,7 +37,7 @@ const features = [
 const FeaturesSlider = () => {
   return (
     <section className="features">
-      <div className="features__container">
+      <div className="container">
         <Swiper
           modules={[Navigation, Pagination]}
           spaceBetween={20}

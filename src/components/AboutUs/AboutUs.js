@@ -12,18 +12,18 @@ const highlights = [
 const AboutUs = () => {
   return (
     <section className="about" id="about">
-      <div className="about__video-wrapper">
-        <div className="about__video-drop">
-          <img
-            src="/images/about-interview.png"
-            alt="GGRC Armenia Interview"
-            className="about__video-img"
-          />
+      <div className="container about__layout">
+        <div className="about__video-wrapper">
+          <div className="about__video-drop">
+            <img
+              src="/images/about-interview.png"
+              alt="GGRC Armenia Interview"
+              className="about__video-img"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="about__content">
-        <div className="container">
+        <div className="about__content">
           <h2 className="about__title">ABOUT US</h2>
           <p className="about__text about__text--bold">
             GGRC Armenia is the Armenian branch of the internationally renowned

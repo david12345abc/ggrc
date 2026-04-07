@@ -5,7 +5,7 @@ const Hero = () => {
   return (
     <section className="hero" id="home">
       <div className="hero__bg">
-        <div className="hero__content">
+        <div className="container hero__inner">
           <div className="hero__row">
             <h1 className="hero__title">
               THE DREAM OF PARENTHOOD COMES TRUE HERE

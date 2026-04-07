@@ -4,15 +4,13 @@
 
 .hero__bg {
   background: var(--primary);
-  padding: 60px 20px 80px;
+  padding: 60px 0 80px;
   min-height: 280px;
   display: flex;
   align-items: center;
 }
 
-.hero__content {
-  max-width: var(--max-width);
-  margin: 0 auto;
+.hero__inner {
   width: 100%;
 }
 
@@ -42,11 +40,12 @@
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 0;
 }
 
 @media (min-width: 768px) {
   .hero__bg {
-    padding: 80px 40px 100px;
+    padding: 80px 0 100px;
     min-height: 360px;
   }
 
@@ -58,7 +57,7 @@
 
 @media (min-width: 1024px) {
   .hero__bg {
-    padding: 72px 60px 88px;
+    padding: 72px 0 88px;
     min-height: 0;
   }
 
