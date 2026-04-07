@@ -8,19 +8,19 @@ import './Blog.css';
 
 const posts = [
   {
-    image: '/images/about-interview.png',
+    image: '/images/blog/opening.jpg',
     title:
       'With Confident Steps Toward the Joy of Parenthood: The Official Opening of GGRC Armenia',
     link: '#',
   },
   {
-    image: '/images/doctors-hero.png',
+    image: '/images/blog/vodnom.jpg',
     title:
       'Modern Approaches to Infertility Treatment: Professional Conference Initiated by GGRC Armenia',
     link: '#',
   },
   {
-    image: '/images/hands.png',
+    image: '/images/blog/interview-tv.png',
     title:
       '\u201CAravot Luso\u201D on Armenian Public TV: GGRC Armenia: A New Hope in Reproductive Medicine',
     link: '#',

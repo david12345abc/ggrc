@@ -1,74 +1,100 @@
 import React from 'react';
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaYoutube,
-  FaTiktok,
-  FaPhoneAlt,
-  FaEnvelope,
-  FaMapMarkerAlt,
-} from 'react-icons/fa';
+import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
+import { FiChevronUp } from 'react-icons/fi';
+import { SITE_CONTACT, SOCIAL_LINKS } from '../../siteInfo';
 import './Footer.css';
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 const Footer = () => {
   return (
     <footer className="footer" id="contact">
-      <div className="container">
-        <div className="footer__grid">
-          <div className="footer__brand">
-            <div className="footer__logo">
+      <div className="footer__decor footer__decor--dots" aria-hidden="true" />
+      <div className="footer__decor footer__decor--curves" aria-hidden="true" />
+
+      <div className="container footer__inner">
+        <div className="footer__top">
+          <div className="footer__brand-block">
+            <div className="footer__brand-row">
               <img
                 src="/images/logo.png"
-                alt="GGRC Armenia"
+                alt=""
                 className="footer__logo-img"
+                width="56"
+                height="56"
               />
+              <span className="footer__brand-name">GGRC ARMENIA</span>
             </div>
-            <p className="footer__desc">
-              Your trusted partner on the journey to parenthood. Georgian-German
-              Reproductive Center, Armenia Branch.
-            </p>
-          </div>
-
-          <div className="footer__links">
-            <h4 className="footer__heading">Quick Links</h4>
-            <a href="#home" className="footer__link">Home</a>
-            <a href="#about" className="footer__link">About Us</a>
-            <a href="#services" className="footer__link">Services</a>
-            <a href="#team" className="footer__link">Our Team</a>
-            <a href="#blog" className="footer__link">Blog</a>
-          </div>
-
-          <div className="footer__contact">
-            <h4 className="footer__heading">Contact Us</h4>
-            <div className="footer__contact-item">
-              <FaPhoneAlt />
-              <span>+374 XX XXX XXX</span>
-            </div>
-            <div className="footer__contact-item">
-              <FaEnvelope />
-              <span>info@ggrc.am</span>
-            </div>
-            <div className="footer__contact-item">
-              <FaMapMarkerAlt />
-              <span>Yerevan, Armenia</span>
-            </div>
-          </div>
-
-          <div className="footer__social-section">
-            <h4 className="footer__heading">Follow Us</h4>
             <div className="footer__socials">
-              <a href="https://facebook.com" className="footer__social-link" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
-                <FaFacebookF />
+              <a
+                href={SOCIAL_LINKS.instagram}
+                className="footer__social"
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="/images/icons/instagram.png" alt="" />
               </a>
-              <a href="https://instagram.com" className="footer__social-link" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
-                <FaInstagram />
+              <a
+                href={SOCIAL_LINKS.linkedin}
+                className="footer__social"
+                aria-label="LinkedIn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="/images/icons/linkedin.png" alt="" />
               </a>
-              <a href="https://youtube.com" className="footer__social-link" aria-label="YouTube" target="_blank" rel="noopener noreferrer">
-                <FaYoutube />
+              <a
+                href={SOCIAL_LINKS.facebook}
+                className="footer__social"
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src="/images/icons/facebook.png" alt="" />
               </a>
-              <a href="https://tiktok.com" className="footer__social-link" aria-label="TikTok" target="_blank" rel="noopener noreferrer">
-                <FaTiktok />
-              </a>
+            </div>
+          </div>
+
+          <div className="footer__links-block">
+            <h2 className="footer__section-title">Links</h2>
+            <nav className="footer__nav">
+              <a href="#home" className="footer__link">Home</a>
+              <a href="#about" className="footer__link">About us</a>
+              <a href="#services" className="footer__link">Services</a>
+              <a href="#contact" className="footer__link">Contact</a>
+            </nav>
+          </div>
+
+          <div className="footer__contact-block">
+            <div className="footer__contact-head">
+              <h2 className="footer__section-title">Contact</h2>
+              <button
+                type="button"
+                className="footer__to-top"
+                onClick={scrollToTop}
+                aria-label="Scroll to top"
+              >
+                <FiChevronUp />
+              </button>
+            </div>
+            <div className="footer__contact-rows">
+              <div className="footer__contact-row">
+                <FaMapMarkerAlt className="footer__contact-icon" aria-hidden />
+                <span>{SITE_CONTACT.addressShort}</span>
+              </div>
+              <div className="footer__contact-row">
+                <FaPhoneAlt className="footer__contact-icon" aria-hidden />
+                <span>{SITE_CONTACT.phoneDisplay}</span>
+              </div>
+              <div className="footer__contact-row">
+                <FaEnvelope className="footer__contact-icon" aria-hidden />
+                <a href={`mailto:${SITE_CONTACT.email}`} className="footer__contact-link">
+                  {SITE_CONTACT.email}
+                </a>
+              </div>
             </div>
           </div>
         </div>

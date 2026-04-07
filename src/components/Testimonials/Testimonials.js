@@ -1,9 +1,5 @@
 import React from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
 import { FaQuoteLeft } from 'react-icons/fa';
-import 'swiper/css';
-import 'swiper/css/pagination';
 import './Testimonials.css';
 
 const testimonials = [
@@ -21,37 +17,29 @@ const testimonials = [
   },
 ];
 
+const testimonialBg = `${process.env.PUBLIC_URL || ''}/images/neural-network.jpg`;
+
 const Testimonials = () => {
   return (
-    <section className="testimonials">
-      <div className="testimonials__bg-pattern" />
-      <div className="container">
+    <section
+      className="testimonials"
+      style={{ backgroundImage: `url(${testimonialBg})` }}
+    >
+      <div className="testimonials__overlay" aria-hidden="true" />
+      <div className="container testimonials__inner">
         <h2 className="testimonials__title">PATIENTS ABOUT GGRC ARMENIA</h2>
 
-        <Swiper
-          modules={[Pagination, Autoplay]}
-          spaceBetween={20}
-          slidesPerView={1}
-          pagination={{ clickable: true }}
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
-          breakpoints={{
-            768: { slidesPerView: 2, spaceBetween: 24 },
-            1024: { slidesPerView: 3, spaceBetween: 30 },
-          }}
-          className="testimonials__swiper"
-        >
+        <div className="testimonials__grid">
           {testimonials.map((testimonial, index) => (
-            <SwiperSlide key={index}>
-              <div className="testimonials__card">
-                <FaQuoteLeft className="testimonials__quote-icon" />
-                <p className="testimonials__text">{testimonial.text}</p>
-                <span className="testimonials__author">
-                  — {testimonial.author}
-                </span>
-              </div>
-            </SwiperSlide>
+            <div key={index} className="testimonials__card">
+              <FaQuoteLeft className="testimonials__quote-icon" />
+              <p className="testimonials__text">{testimonial.text}</p>
+              <span className="testimonials__author">
+                — {testimonial.author}
+              </span>
+            </div>
           ))}
-        </Swiper>
+        </div>
       </div>
     </section>
   );
