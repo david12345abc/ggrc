@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { HiMenuAlt3, HiX } from 'react-icons/hi';
 import { SITE_CONTACT, SOCIAL_LINKS } from '../../siteInfo';
 import './Header.css';
 
 const MOBILE_NAV = [
-  { label: 'ABOUT US', href: '#about' },
-  { label: 'SERVICES', href: '#services' },
-  { label: 'TEAM', href: '#team' },
-  { label: 'BLOG', href: '#blog' },
-  { label: 'CONTACT', href: '#contact' },
+  { label: 'ABOUT US', to: '/about' },
+  { label: 'SERVICES', to: '/#services' },
+  { label: 'TEAM', to: '/#team' },
+  { label: 'BLOG', to: '/#blog' },
+  { label: 'CONTACT', to: '/#contact' },
 ];
 
 const DESKTOP_NAV = [
-  { label: 'Home', href: '#home' },
-  { label: 'About Us', href: '#about' },
-  { label: 'Services', href: '#services' },
-  { label: 'Our Team', href: '#team' },
-  { label: 'Blog', href: '#blog' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Home', to: '/' },
+  { label: 'About Us', to: '/about' },
+  { label: 'Services', to: '/#services' },
+  { label: 'Our Team', to: '/#team' },
+  { label: 'Blog', to: '/#blog' },
+  { label: 'Contact', to: '/#contact' },
 ];
 
 const LANGUAGES = [
@@ -65,19 +66,19 @@ const Header = () => {
     <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
       <div className="header__bar" aria-hidden={menuOpen}>
         <div className="header__inner">
-          <a href="#home" className="header__logo" onClick={closeMenu}>
+          <Link to="/" className="header__logo" onClick={closeMenu}>
             <img
               src="/images/logo.png"
               alt="GGRC Armenia"
               className="header__logo-img"
             />
-          </a>
+          </Link>
 
           <nav className="header__nav header__nav--desktop" aria-label="Main">
             {DESKTOP_NAV.map((link) => (
-              <a key={link.href} href={link.href} className="header__nav-link">
+              <Link key={link.to} to={link.to} className="header__nav-link">
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -96,9 +97,9 @@ const Header = () => {
       {menuOpen && (
         <div className="header__fullscreen" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="header__fullscreen-top">
-            <a href="#home" className="header__fullscreen-logo" onClick={closeMenu}>
-              <img src="/images/logo.png" alt="" />
-            </a>
+            <Link to="/" className="header__fullscreen-logo" onClick={closeMenu}>
+              <img src="/images/logo-purple.png" alt="GGRC Armenia" />
+            </Link>
             <button
               type="button"
               className="header__fullscreen-close"
@@ -111,14 +112,14 @@ const Header = () => {
 
           <nav className="header__fullscreen-nav" aria-label="Mobile">
             {MOBILE_NAV.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
+              <Link
+                key={link.to}
+                to={link.to}
                 className="header__fullscreen-link"
                 onClick={closeMenu}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 

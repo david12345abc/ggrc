@@ -1,0 +1,259 @@
+.about-page {
+  padding-top: 88px;
+  padding-bottom: 0;
+}
+
+.about-page__breadcrumb {
+  background: #4a5568;
+  color: #ffffff;
+  padding: 14px 0;
+  text-align: center;
+}
+
+.about-page__breadcrumb-inner {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.about-page__breadcrumb-link {
+  color: #ffffff;
+  transition: opacity 0.2s ease;
+}
+
+.about-page__breadcrumb-link:hover {
+  opacity: 0.85;
+}
+
+.about-page__breadcrumb-sep {
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+.about-page__breadcrumb-current {
+  opacity: 0.95;
+}
+
+.about-page__section {
+  padding: 40px 0;
+}
+
+.about-page__section--white {
+  background: var(--white);
+}
+
+.about-page__section--muted {
+  background: #f5f5f7;
+  padding: 48px 0 56px;
+}
+
+.about-page__section--video {
+  background: var(--white);
+  padding: 24px 0 40px;
+}
+
+.about-page__narrow {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.about-page__kicker {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 16px;
+}
+
+.about-page__hero-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+}
+
+.about-page__lead,
+.about-page__body {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-gray);
+}
+
+.about-page__body {
+  margin-bottom: 28px;
+}
+
+.about-page__section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 28px;
+  line-height: 1.35;
+}
+
+.about-page__section-title--left {
+  text-align: left;
+}
+
+.about-page__check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.about-page__check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-dark);
+}
+
+.about-page__check-icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  color: var(--text-dark);
+  stroke-width: 2.5;
+}
+
+.about-page__check-title {
+  font-weight: 700;
+}
+
+.about-page__check-dash {
+  font-weight: 400;
+}
+
+.about-page__check-text {
+  font-weight: 400;
+  color: var(--text-gray);
+}
+
+.about-page__media {
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow);
+}
+
+.about-page__media-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.about-page__video-shell {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #0f0f0f;
+  aspect-ratio: 16 / 9;
+  box-shadow: var(--shadow-lg);
+}
+
+.about-page__iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.about-page__video-fallback {
+  position: absolute;
+  inset: 0;
+  display: block;
+  color: inherit;
+}
+
+.about-page__video-fallback-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-page__video-fallback-label {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  background: rgba(91, 45, 142, 0.92);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.about-page__bullet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-left: 1.1em;
+  list-style: disc;
+}
+
+.about-page__bullet-item {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--text-gray);
+}
+
+@media (min-width: 768px) {
+  .about-page {
+    padding-top: 92px;
+  }
+
+  .about-page__section {
+    padding: 52px 0;
+  }
+
+  .about-page__section--muted {
+    padding: 64px 0 72px;
+  }
+
+  .about-page__hero-title {
+    font-size: 28px;
+  }
+
+  .about-page__section-title {
+    font-size: 22px;
+  }
+
+  .about-page__lead,
+  .about-page__body,
+  .about-page__check-item,
+  .about-page__bullet-item {
+    font-size: 16px;
+  }
+
+  .about-page__breadcrumb-inner {
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-page__hero-title {
+    font-size: 32px;
+  }
+
+  .about-page__section-title {
+    font-size: 24px;
+  }
+}

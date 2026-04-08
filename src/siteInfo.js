@@ -11,3 +11,6 @@ export const SOCIAL_LINKS = {
   linkedin: 'https://linkedin.com',
   facebook: 'https://facebook.com',
 };
+
+/** YouTube video ID for the About page embed. Leave null to show poster + link. */
+export const ABOUT_PAGE_YOUTUBE_VIDEO_ID = 'Wu2lM_yjkzc';

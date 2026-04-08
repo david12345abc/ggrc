@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FiCheckCircle } from 'react-icons/fi';
 import './AboutUs.css';
 
@@ -46,9 +47,9 @@ const AboutUs = () => {
             ))}
           </ul>
 
-          <a href="#services" className="about__btn">
+          <Link to="/about" className="about__btn">
             About Us
-          </a>
+          </Link>
         </div>
       </div>
     </section>

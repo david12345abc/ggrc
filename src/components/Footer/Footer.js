@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 import { FiChevronUp } from 'react-icons/fi';
 import { SITE_CONTACT, SOCIAL_LINKS } from '../../siteInfo';
@@ -19,13 +20,10 @@ const Footer = () => {
           <div className="footer__brand-block">
             <div className="footer__brand-row">
               <img
-                src="/images/logo.png"
-                alt=""
+                src="/images/logo-purple.png"
+                alt="GGRC Armenia"
                 className="footer__logo-img"
-                width="56"
-                height="56"
               />
-              <span className="footer__brand-name">GGRC ARMENIA</span>
             </div>
             <div className="footer__socials">
               <a
@@ -61,9 +59,9 @@ const Footer = () => {
           <div className="footer__links-block">
             <h2 className="footer__section-title">Links</h2>
             <nav className="footer__nav">
-              <a href="#home" className="footer__link">Home</a>
-              <a href="#about" className="footer__link">About us</a>
-              <a href="#services" className="footer__link">Services</a>
+              <Link to="/" className="footer__link">Home</Link>
+              <Link to="/about" className="footer__link">About us</Link>
+              <Link to="/#services" className="footer__link">Services</Link>
               <a href="#contact" className="footer__link">Contact</a>
             </nav>
           </div>
