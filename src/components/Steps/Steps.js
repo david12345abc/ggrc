@@ -1,41 +1,23 @@
 import React from 'react';
+import { getImgPosition } from '../../utils/imgPosition';
+import { buildSectionStyle, buildTitleStyle, buildGridStyle, getGridClassName } from '../../utils/sectionStyles';
 import './Steps.css';
 
-const steps = [
-  {
-    number: '01',
-    title: 'Get an Appointment',
-    description:
-      'Start Your journey to parenthood with the guidance of experienced specialists',
-    image: '/images/steps/step1.png',
-  },
-  {
-    number: '02',
-    title: 'Start Check-Up',
-    description: "We'll carefully assess Your reproductive health",
-    image: '/images/steps/step2.png',
-  },
-  {
-    number: '03',
-    title: 'Enjoy a Healthy Life',
-    description:
-      'Our goal is to help You build a complete and happy family',
-    image: '/images/steps/step3.png',
-  },
-];
+const Steps = ({ data }) => {
+  if (!data) return null;
+  const items = data.items || [];
 
-const Steps = () => {
   return (
-    <section className="steps">
+    <section className="steps" style={buildSectionStyle(data)}>
       <div className="container">
-        <h2 className="section-title">STEPS</h2>
+        <h2 className="section-title" style={buildTitleStyle(data)}>{data.title}</h2>
 
-        <div className="steps__grid">
-          {steps.map((step, index) => (
-            <div key={index} className="steps__card">
-              <span className="steps__number">{step.number}</span>
+        <div className={getGridClassName(data, 'steps__grid')} style={buildGridStyle(data)}>
+          {items.map((step) => (
+            <div key={step.id} className="steps__card">
+              <span className="steps__number">{step.extra_data?.number}</span>
               <div className="steps__card-img">
-                <img src={step.image} alt={step.title} />
+                {step.image_url && <img src={step.image_url} alt={step.title} style={getImgPosition(step) ? { objectPosition: getImgPosition(step) } : undefined} />}
               </div>
               <h3 className="steps__card-title">{step.title}</h3>
               <p className="steps__card-desc">{step.description}</p>

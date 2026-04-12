@@ -112,3 +112,25 @@
     font-size: 14px;
   }
 }
+
+.why-choose__grid--aligned {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.why-choose__grid--aligned .why-choose__card {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .why-choose__grid--aligned {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .why-choose__grid--aligned .why-choose__card {
+    width: 100%;
+  }
+}

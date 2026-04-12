@@ -109,3 +109,25 @@
     padding: 32px 26px;
   }
 }
+
+.testimonials__grid--aligned {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.testimonials__grid--aligned .testimonials__card {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .testimonials__grid--aligned {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .testimonials__grid--aligned .testimonials__card {
+    width: 100%;
+  }
+}

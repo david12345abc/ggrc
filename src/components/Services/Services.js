@@ -1,26 +1,28 @@
 import React from 'react';
+import { getImgPosition } from '../../utils/imgPosition';
+import { buildSectionStyle, buildTitleStyle } from '../../utils/sectionStyles';
 import './Services.css';
 
-const Services = () => {
-  return (
-    <section className="services" id="services">
-      <div className="container">
-        <h2 className="section-title">OUR SERVICES</h2>
-        <p className="section-subtitle">
-          GGRC Armenia offers a wide range of services, including
-        </p>
+const Services = ({ data }) => {
+  if (!data) return null;
+  const items = data.items || [];
 
-        <div className="services__single">
-          <div className="services__single-img">
-            <img
-              src="/images/hands.png"
-              alt="Infertility Diagnosis and Treatment"
-            />
+  return (
+    <section className="services" id="services" style={buildSectionStyle(data)}>
+      <div className="container">
+        <h2 className="section-title" style={buildTitleStyle(data)}>{data.title}</h2>
+        {data.subtitle && <p className="section-subtitle">{data.subtitle}</p>}
+
+        {items.map((item) => (
+          <div key={item.id} className="services__single">
+            {item.image_url && (
+              <div className="services__single-img">
+                <img src={item.image_url} alt={item.title} style={getImgPosition(item) ? { objectPosition: getImgPosition(item) } : undefined} />
+              </div>
+            )}
+            <h3 className="services__single-title">{item.title}</h3>
           </div>
-          <h3 className="services__single-title">
-            INFERTILITY DIAGNOSIS AND TREATMENT (FOR WOMEN AND MEN)
-          </h3>
-        </div>
+        ))}
       </div>
     </section>
   );

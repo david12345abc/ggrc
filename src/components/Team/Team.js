@@ -1,48 +1,29 @@
 import React from 'react';
+import { getImgPosition } from '../../utils/imgPosition';
+import { buildSectionStyle, buildTitleStyle, buildGridStyle, getGridClassName } from '../../utils/sectionStyles';
 import './Team.css';
 
-const teamMembers = [
-  {
-    name: 'Nino Museridze',
-    role: 'Founder and Clinical Director of the GGRC',
-    image: '/images/team/nino.png',
-  },
-  {
-    name: 'Lilit Karapetyan',
-    role: 'Gynecologist-reproductive specialist',
-    image: '/images/team/lilit.png',
-  },
-  {
-    name: 'Levon Vardazaryan',
-    role: 'Urologist/andrologist',
-    image: '/images/team/levon.png',
-  },
-  {
-    name: 'Emma Vasilyan',
-    role: 'Ultrasound Specialist',
-    image: '/images/team/emma.png',
-  },
-];
+const Team = ({ data }) => {
+  if (!data) return null;
+  const items = data.items || [];
 
-const Team = () => {
   return (
-    <section className="team" id="team">
+    <section className="team" id="team" style={buildSectionStyle(data)}>
       <div className="container">
-        <h2 className="section-title">OUR TEAM</h2>
-        <p className="section-subtitle">
-          The professional team at GGRC Armenia is Your trusted partner on the
-          journey to parenthood
-        </p>
+        <h2 className="section-title" style={buildTitleStyle(data)}>{data.title}</h2>
+        {data.subtitle && <p className="section-subtitle">{data.subtitle}</p>}
 
-        <div className="team__grid">
-          {teamMembers.map((member, index) => (
-            <div key={index} className="team__card">
+        <div className={getGridClassName(data, 'team__grid')} style={buildGridStyle(data)}>
+          {items.map((member) => (
+            <div key={member.id} className="team__card">
               <div className="team__card-img">
-                <img src={member.image} alt={member.name} />
+                {member.image_url && (
+                  <img src={member.image_url} alt={member.title} style={getImgPosition(member) ? { objectPosition: getImgPosition(member) } : undefined} />
+                )}
               </div>
               <div className="team__card-info">
-                <h3 className="team__card-name">{member.name}</h3>
-                <p className="team__card-role">{member.role}</p>
+                <h3 className="team__card-name">{member.title}</h3>
+                <p className="team__card-role">{member.description}</p>
               </div>
             </div>
           ))}

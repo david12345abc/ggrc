@@ -2,36 +2,20 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import { FiArrowRight } from 'react-icons/fi';
+import { getImgPosition } from '../../utils/imgPosition';
+import { buildSectionStyle, buildTitleStyle } from '../../utils/sectionStyles';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import './Blog.css';
 
-const posts = [
-  {
-    image: '/images/blog/opening.jpg',
-    title:
-      'With Confident Steps Toward the Joy of Parenthood: The Official Opening of GGRC Armenia',
-    link: '#',
-  },
-  {
-    image: '/images/blog/vodnom.jpg',
-    title:
-      'Modern Approaches to Infertility Treatment: Professional Conference Initiated by GGRC Armenia',
-    link: '#',
-  },
-  {
-    image: '/images/blog/interview-tv.png',
-    title:
-      '\u201CAravot Luso\u201D on Armenian Public TV: GGRC Armenia: A New Hope in Reproductive Medicine',
-    link: '#',
-  },
-];
+const Blog = ({ data }) => {
+  if (!data) return null;
+  const items = data.items || [];
 
-const Blog = () => {
   return (
-    <section className="blog" id="blog">
+    <section className="blog" id="blog" style={buildSectionStyle(data)}>
       <div className="container">
-        <h2 className="section-title">BLOG</h2>
+        <h2 className="section-title" style={buildTitleStyle(data)}>{data.title}</h2>
 
         <Swiper
           modules={[Pagination]}
@@ -44,16 +28,18 @@ const Blog = () => {
           }}
           className="blog__swiper"
         >
-          {posts.map((post, index) => (
-            <SwiperSlide key={index}>
+          {items.map((post) => (
+            <SwiperSlide key={post.id}>
               <div className="blog__card">
-                <div className="blog__card-img">
-                  <img src={post.image} alt={post.title} />
-                </div>
+                {post.image_url && (
+                  <div className="blog__card-img">
+                    <img src={post.image_url} alt={post.title} style={getImgPosition(post) ? { objectPosition: getImgPosition(post) } : undefined} />
+                  </div>
+                )}
                 <div className="blog__card-content">
                   <h3 className="blog__card-title">{post.title}</h3>
-                  <a href={post.link} className="blog__card-link">
-                    READ MORE <FiArrowRight />
+                  <a href={post.link_url || '#'} className="blog__card-link">
+                    {post.link_text || 'READ MORE'} <FiArrowRight />
                   </a>
                 </div>
               </div>

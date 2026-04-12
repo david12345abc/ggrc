@@ -97,3 +97,25 @@
     font-size: 13px;
   }
 }
+
+.team__grid--aligned {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.team__grid--aligned .team__card {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .team__grid--aligned {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .team__grid--aligned .team__card {
+    width: 100%;
+  }
+}

@@ -1,5 +1,5 @@
 .hero {
-  margin-top: 92px;
+  margin-top: var(--header-height, 92px);
 }
 
 .hero__bg {

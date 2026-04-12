@@ -1,55 +1,51 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FiCheckCircle } from 'react-icons/fi';
+import { getImgPosition } from '../../utils/imgPosition';
+import { buildSectionStyle, buildTitleStyle } from '../../utils/sectionStyles';
 import './AboutUs.css';
 
-const highlights = [
-  'Time-lapse Embryoscope',
-  'Preimplantation Genetic Testing (PGT)',
-  'Cryopreservation of eggs and sperm',
-  'Integration of Artificial Intelligence (AI) in IVF (IVF/ICSI)',
-];
+const AboutUs = ({ data }) => {
+  if (!data) return null;
 
-const AboutUs = () => {
+  const settings = data.settings || {};
+  const items = data.items || [];
+  const imageItem = items.find((i) => !i.extra_data?.type);
+  const highlights = items.filter((i) => i.extra_data?.type === 'highlight');
+  const imgSrc = imageItem?.image_url || '/images/about-interview.png';
+
   return (
-    <section className="about" id="about">
+    <section className="about" id="about" style={buildSectionStyle(data)}>
       <div className="container about__layout">
         <div className="about__video-wrapper">
           <div className="about__video-drop">
-            <img
-              src="/images/about-interview.png"
-              alt="GGRC Armenia Interview"
-              className="about__video-img"
-            />
+            <img src={imgSrc} alt="GGRC Armenia Interview" className="about__video-img" style={getImgPosition(imageItem) ? { objectPosition: getImgPosition(imageItem) } : undefined} />
           </div>
         </div>
 
         <div className="about__content">
-          <h2 className="about__title">ABOUT US</h2>
-          <p className="about__text about__text--bold">
-            GGRC Armenia is the Armenian branch of the internationally renowned
-            Georgian-German Reproductive Center (GGRC), a leading fertility
-            clinic that has helped countless families fulfill their dream of
-            becoming parents.
-          </p>
-          <p className="about__text">
-            Our core mission is to make advanced, high-quality, and effective
-            reproductive services accessible to everyone facing infertility
-            challenges.
-          </p>
+          <h2 className="about__title" style={buildTitleStyle(data)}>{data.title}</h2>
+          {settings.bold_text && (
+            <p className="about__text about__text--bold">{settings.bold_text}</p>
+          )}
+          {settings.text && (
+            <p className="about__text">{settings.text}</p>
+          )}
 
           <ul className="about__list">
-            {highlights.map((item, index) => (
-              <li key={index} className="about__list-item">
+            {highlights.map((item) => (
+              <li key={item.id} className="about__list-item">
                 <FiCheckCircle className="about__check-icon" />
-                <span>{item}</span>
+                <span>{item.title}</span>
               </li>
             ))}
           </ul>
 
-          <Link to="/about" className="about__btn">
-            About Us
-          </Link>
+          {settings.button_link && (
+            <Link to={settings.button_link} className="about__btn">
+              {settings.button_text || 'About Us'}
+            </Link>
+          )}
         </div>
       </div>
     </section>

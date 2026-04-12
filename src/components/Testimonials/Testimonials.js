@@ -1,41 +1,31 @@
 import React from 'react';
 import { FaQuoteLeft } from 'react-icons/fa';
+import { buildSectionStyle, buildTitleStyle, buildGridStyle, getGridClassName } from '../../utils/sectionStyles';
 import './Testimonials.css';
 
-const testimonials = [
-  {
-    text: "I had PCOS and hormonal disorders. We had attempted IVF multiple times in Russia, but without success. At GGRC Armenia, the impossible became possible. I'm honestly impressed by the level of professionalism in such a small country.",
-    author: 'Patient from Russia',
-  },
-  {
-    text: 'The team at GGRC Armenia treated us with such warmth and care. After years of trying, we finally became parents. We are forever grateful for their expertise and dedication.',
-    author: 'International Patient',
-  },
-  {
-    text: 'From the very first consultation, we felt that we were in good hands. The doctors explained every step clearly and gave us hope when we had almost given up.',
-    author: 'Patient from CIS',
-  },
-];
+const Testimonials = ({ data }) => {
+  if (!data) return null;
+  const items = data.items || [];
+  const bgUrl = data.background_image_url;
+  const baseStyle = buildSectionStyle(data) || {};
+  if (bgUrl) baseStyle.backgroundImage = `url(${bgUrl})`;
 
-const testimonialBg = `${process.env.PUBLIC_URL || ''}/images/neural-network.jpg`;
-
-const Testimonials = () => {
   return (
     <section
       className="testimonials"
-      style={{ backgroundImage: `url(${testimonialBg})` }}
+      style={Object.keys(baseStyle).length ? baseStyle : undefined}
     >
       <div className="testimonials__overlay" aria-hidden="true" />
       <div className="container testimonials__inner">
-        <h2 className="testimonials__title">PATIENTS ABOUT GGRC ARMENIA</h2>
+        <h2 className="testimonials__title" style={buildTitleStyle(data)}>{data.title}</h2>
 
-        <div className="testimonials__grid">
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="testimonials__card">
+        <div className={getGridClassName(data, 'testimonials__grid')} style={buildGridStyle(data)}>
+          {items.map((t) => (
+            <div key={t.id} className="testimonials__card">
               <FaQuoteLeft className="testimonials__quote-icon" />
-              <p className="testimonials__text">{testimonial.text}</p>
+              <p className="testimonials__text">{t.description}</p>
               <span className="testimonials__author">
-                — {testimonial.author}
+                — {t.extra_data?.author}
               </span>
             </div>
           ))}

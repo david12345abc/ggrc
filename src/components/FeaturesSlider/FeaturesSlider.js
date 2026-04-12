@@ -1,42 +1,19 @@
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
-import { FaUserMd, FaHospital, FaHandHoldingHeart, FaGlobe } from 'react-icons/fa';
+import getIcon from '../../utils/iconMap';
+import { buildSectionStyle } from '../../utils/sectionStyles';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './FeaturesSlider.css';
 
-const features = [
-  {
-    icon: <FaUserMd />,
-    title: 'Professional Excellence',
-    description:
-      'We bring together specialists with international experience who follow the latest advancements in reproductive medicine.',
-  },
-  {
-    icon: <FaHospital />,
-    title: 'Advanced Technology',
-    description:
-      'Our clinic is equipped with state-of-the-art technology including Time-lapse Embryoscope and AI-integrated IVF systems.',
-  },
-  {
-    icon: <FaHandHoldingHeart />,
-    title: 'Personalized Care',
-    description:
-      'Every patient receives an individualized treatment plan tailored to their unique medical needs and personal circumstances.',
-  },
-  {
-    icon: <FaGlobe />,
-    title: 'International Standards',
-    description:
-      'As a branch of the renowned Georgian-German Reproductive Center, we maintain the highest international standards of care.',
-  },
-];
+const FeaturesSlider = ({ data }) => {
+  if (!data) return null;
+  const items = data.items || [];
 
-const FeaturesSlider = () => {
   return (
-    <section className="features">
+    <section className="features" style={buildSectionStyle(data)}>
       <div className="container">
         <Swiper
           modules={[Navigation, Pagination]}
@@ -50,15 +27,20 @@ const FeaturesSlider = () => {
           }}
           className="features__swiper"
         >
-          {features.map((feature, index) => (
-            <SwiperSlide key={index}>
-              <div className="features__card">
-                <div className="features__icon">{feature.icon}</div>
-                <h3 className="features__title">{feature.title}</h3>
-                <p className="features__desc">{feature.description}</p>
-              </div>
-            </SwiperSlide>
-          ))}
+          {items.map((item) => {
+            const IconComp = getIcon(item.icon_name);
+            return (
+              <SwiperSlide key={item.id}>
+                <div className="features__card">
+                  <div className="features__icon">
+                    {IconComp ? <IconComp /> : null}
+                  </div>
+                  <h3 className="features__title">{item.title}</h3>
+                  <p className="features__desc">{item.description}</p>
+                </div>
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </div>
     </section>
