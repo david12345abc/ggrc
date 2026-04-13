@@ -1,6 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FiTrash2, FiCamera, FiLink, FiX, FiMove } from 'react-icons/fi';
-import { adminApi } from '../api';
+import { adminApi, publicApi } from '../api';
 import getIcon from '../utils/iconMap';
 import ImagePositioner from './ImagePositioner';
 
@@ -90,11 +90,14 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
     }
   };
 
+  const isHeroPhoto = sectionType === 'hero';
   const hasImage = ['hero', 'team', 'steps', 'services', 'blog', 'about_teaser', 'about_tech', 'card_grid', 'card_carousel'].includes(sectionType);
   const hasLink = ['blog', 'services', 'card_grid', 'card_carousel'].includes(sectionType);
   const hasIcon = ['features_carousel', 'why_choose_us'].includes(sectionType);
   const hasNumber = sectionType === 'steps';
   const isTestimonial = sectionType === 'testimonials';
+  const hasTitle = !isTestimonial && !isHeroPhoto;
+  const hasDescription = !isHeroPhoto;
 
   const IconComp = getIcon(iconName);
 
@@ -173,7 +176,7 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
         </div>
       )}
 
-      {!isTestimonial && (
+      {hasTitle && (
         <input
           className="ve-card__title-input"
           value={title}
@@ -182,13 +185,15 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
         />
       )}
 
-      <textarea
-        className="ve-card__desc-input"
-        value={description}
-        onChange={(e) => { setDescription(e.target.value); markDirty(); }}
-        placeholder={isTestimonial ? 'Quote text...' : 'Description...'}
-        rows={isTestimonial ? 4 : 2}
-      />
+      {hasDescription && (
+        <textarea
+          className="ve-card__desc-input"
+          value={description}
+          onChange={(e) => { setDescription(e.target.value); markDirty(); }}
+          placeholder={isTestimonial ? 'Quote text...' : 'Description...'}
+          rows={isTestimonial ? 4 : 2}
+        />
+      )}
 
       {isTestimonial && (
         <input
@@ -202,21 +207,13 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
       {hasLink && (
         <div className="ve-card__link-section">
           {showLinkEditor ? (
-            <div className="ve-card__link-editor">
-              <input
-                className="ve-input-sm"
-                value={linkText}
-                onChange={(e) => { setLinkText(e.target.value); markDirty(); }}
-                placeholder="Link text (e.g. READ MORE)"
-              />
-              <input
-                className="ve-input-sm"
-                value={linkUrl}
-                onChange={(e) => { setLinkUrl(e.target.value); markDirty(); }}
-                placeholder="URL (e.g. https://...)"
-              />
-              <button className="ve-link-done" onClick={() => setShowLinkEditor(false)}>Done</button>
-            </div>
+            <LinkEditor
+              linkText={linkText}
+              linkUrl={linkUrl}
+              onLinkTextChange={(v) => { setLinkText(v); markDirty(); }}
+              onLinkUrlChange={(v) => { setLinkUrl(v); markDirty(); }}
+              onDone={() => setShowLinkEditor(false)}
+            />
           ) : (
             <button className="ve-card__link-btn" onClick={() => setShowLinkEditor(true)}>
               <FiLink /> {linkText || 'Add link'}
@@ -240,6 +237,75 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
           sectionType={sectionType}
         />
       )}
+    </div>
+  );
+};
+
+const LinkEditor = ({ linkText, linkUrl, onLinkTextChange, onLinkUrlChange, onDone }) => {
+  const [mode, setMode] = useState(
+    linkUrl && !linkUrl.startsWith('/page/') && !linkUrl.startsWith('http') ? 'external' :
+    linkUrl && linkUrl.startsWith('/page/') ? 'page' : 'external'
+  );
+  const [pages, setPages] = useState([]);
+
+  useEffect(() => {
+    publicApi.getPages().then(({ data }) => {
+      setPages(data.filter((p) => !p.show_in_nav));
+    }).catch(() => {});
+  }, []);
+
+  const handlePageSelect = (slug) => {
+    if (slug) {
+      onLinkUrlChange(`/page/${slug}`);
+    } else {
+      onLinkUrlChange('');
+    }
+  };
+
+  const selectedSlug = linkUrl?.startsWith('/page/') ? linkUrl.replace('/page/', '') : '';
+
+  return (
+    <div className="ve-card__link-editor">
+      <input
+        className="ve-input-sm"
+        value={linkText}
+        onChange={(e) => onLinkTextChange(e.target.value)}
+        placeholder="Link text (e.g. READ MORE)"
+      />
+      <div className="ve-link-mode-tabs">
+        <button
+          className={`ve-link-mode-tab ${mode === 'external' ? 've-link-mode-tab--active' : ''}`}
+          onClick={() => { setMode('external'); onLinkUrlChange(''); }}
+        >
+          External URL
+        </button>
+        <button
+          className={`ve-link-mode-tab ${mode === 'page' ? 've-link-mode-tab--active' : ''}`}
+          onClick={() => { setMode('page'); onLinkUrlChange(''); }}
+        >
+          Your Page
+        </button>
+      </div>
+      {mode === 'external' ? (
+        <input
+          className="ve-input-sm"
+          value={linkUrl}
+          onChange={(e) => onLinkUrlChange(e.target.value)}
+          placeholder="URL (e.g. https://...)"
+        />
+      ) : (
+        <select
+          className="ve-select"
+          value={selectedSlug}
+          onChange={(e) => handlePageSelect(e.target.value)}
+        >
+          <option value="">Select a page...</option>
+          {pages.map((p) => (
+            <option key={p.id} value={p.slug}>{p.title}</option>
+          ))}
+        </select>
+      )}
+      <button className="ve-link-done" onClick={onDone}>Done</button>
     </div>
   );
 };

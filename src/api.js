@@ -58,6 +58,11 @@ export const publicApi = {
 };
 
 export const adminApi = {
+  getPages: () => api.get('/admin/pages/'),
+  createPage: (data) => api.post('/admin/pages/', data),
+  updatePage: (id, data) => api.patch(`/admin/pages/${id}/`, data),
+  deletePage: (id) => api.delete(`/admin/pages/${id}/`),
+
   getSections: (params) => api.get('/admin/sections/', { params }),
   createSection: (data) => api.post('/admin/sections/', sendFormData(data)),
   updateSection: (id, data) => api.patch(`/admin/sections/${id}/`, sendFormData(data)),

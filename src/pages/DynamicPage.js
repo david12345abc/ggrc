@@ -12,6 +12,7 @@ import Team from '../components/Team/Team';
 import Steps from '../components/Steps/Steps';
 import Testimonials from '../components/Testimonials/Testimonials';
 import Blog from '../components/Blog/Blog';
+import CardCarousel from '../components/CardCarousel/CardCarousel';
 import './DynamicPage.css';
 
 const SECTION_RENDERERS = {
@@ -26,7 +27,8 @@ const SECTION_RENDERERS = {
   blog: (data) => <Blog key={data.id} data={data} />,
   text_block: (data) => <TextBlock key={data.id} data={data} />,
   card_grid: (data) => <CardGrid key={data.id} data={data} />,
-  card_carousel: (data) => <CardGrid key={data.id} data={data} />,
+  card_carousel: (data) => <CardCarousel key={data.id} data={data} />,
+  video_block: (data) => <VideoBlock key={data.id} data={data} />,
 };
 
 const TextBlock = ({ data }) => {
@@ -51,6 +53,37 @@ const TextBlock = ({ data }) => {
             {s.body}
           </div>
         )}
+      </div>
+    </section>
+  );
+};
+
+function extractVideoId(url) {
+  if (!url) return null;
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+const VideoBlock = ({ data }) => {
+  if (!data) return null;
+  const s = data.settings || {};
+  const videoId = extractVideoId(s.video_url);
+  if (!videoId) return null;
+
+  return (
+    <section className="dp-video-block" style={buildSectionStyle(data)}>
+      <div className="container">
+        {data.title && <h2 className="dp-video-block__title" style={buildTitleStyle(data)}>{data.title}</h2>}
+        <div className="dp-video-block__wrapper">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title={data.title || 'Video'}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="dp-video-block__iframe"
+          />
+        </div>
       </div>
     </section>
   );

@@ -43,6 +43,19 @@ const CARDS_ALIGN_OPTIONS = [
   { value: 'stretch', icon: FiAlignJustify, label: 'Full width' },
 ];
 
+function extractYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
 const SectionEditor = ({ section, onClose, onSaved }) => {
   const [title, setTitle] = useState(section.title || '');
   const [subtitle, setSubtitle] = useState(section.subtitle || '');
@@ -56,7 +69,9 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
 
   const sType = section.section_type;
   const isTextBlock = sType === 'text_block';
-  const hasCards = !isTextBlock;
+  const isHero = sType === 'hero';
+  const isVideo = sType === 'video_block';
+  const hasCards = !isTextBlock && !isVideo;
 
   const reloadItems = useCallback(() => {
     adminApi.getSections({ page: section.page }).then(({ data }) => {
@@ -130,20 +145,20 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
     setBgImagePreview(null);
   };
 
-  const textPreviewStyle = isTextBlock ? {
-    fontSize: `${settingsState.font_size || 16}px`,
-    fontWeight: settingsState.font_weight || '400',
+  const textPreviewStyle = (isTextBlock || isHero) ? {
+    fontSize: `${settingsState.font_size || (isHero ? 44 : 16)}px`,
+    fontWeight: settingsState.font_weight || (isHero ? '800' : '400'),
     fontFamily: settingsState.font_family || 'inherit',
-    color: settingsState.text_color || '#374151',
+    color: settingsState.text_color || (isHero ? '#ffffff' : '#374151'),
     textAlign: settingsState.text_align || 'left',
-    lineHeight: 1.7,
+    lineHeight: isHero ? 1.3 : 1.7,
   } : {};
 
   return (
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()}>
         <div className="admin-modal__header">
-          <h2>{isTextBlock ? 'Edit Text Block' : 'Edit Section'}</h2>
+          <h2>{isTextBlock ? 'Edit Text Block' : isVideo ? 'Edit Video Block' : 'Edit Section'}</h2>
           <button className="admin-modal__close" onClick={onClose}><FiX /></button>
         </div>
 
@@ -226,8 +241,158 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
             </>
           )}
 
+          {/* ── Video Block Mode ── */}
+          {isVideo && (
+            <>
+              <div className="ve-section-field">
+                <label className="ve-label">Section Title (optional)</label>
+                <input
+                  className="ve-input ve-input--lg"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="e.g. Watch Our Story"
+                />
+              </div>
+
+              <div className="ve-section-field">
+                <label className="ve-label">YouTube Link</label>
+                <input
+                  className="ve-input"
+                  value={settingsState.video_url || ''}
+                  onChange={(e) => updateSetting('video_url', e.target.value)}
+                  placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                />
+              </div>
+
+              {settingsState.video_url && extractYouTubeId(settingsState.video_url) && (
+                <div className="ve-video-preview">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${extractYouTubeId(settingsState.video_url)}`}
+                    title="Video preview"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="ve-video-preview__iframe"
+                  />
+                </div>
+              )}
+
+              {settingsState.video_url && !extractYouTubeId(settingsState.video_url) && (
+                <p style={{ color: '#dc2626', fontSize: 13 }}>
+                  Could not parse YouTube video ID. Please paste a valid YouTube link.
+                </p>
+              )}
+            </>
+          )}
+
+          {/* ── Hero Banner Mode ── */}
+          {isHero && (
+            <>
+              <div className="ve-text-toolbar">
+                <div className="ve-text-toolbar__row">
+                  <select
+                    className="ve-text-toolbar__select"
+                    value={settingsState.font_family || ''}
+                    onChange={(e) => updateSetting('font_family', e.target.value)}
+                  >
+                    {FONT_OPTIONS.map((f) => (
+                      <option key={f.value} value={f.value}>{f.label}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    className="ve-text-toolbar__select ve-text-toolbar__select--sm"
+                    value={settingsState.font_weight || '800'}
+                    onChange={(e) => updateSetting('font_weight', e.target.value)}
+                  >
+                    {WEIGHT_OPTIONS.map((w) => (
+                      <option key={w.value} value={w.value}>{w.label}</option>
+                    ))}
+                  </select>
+
+                  <div className="ve-text-toolbar__size">
+                    <input
+                      type="number"
+                      className="ve-text-toolbar__num"
+                      min="16"
+                      max="120"
+                      value={settingsState.font_size || 44}
+                      onChange={(e) => updateSetting('font_size', Number(e.target.value))}
+                    />
+                    <span className="ve-text-toolbar__unit">px</span>
+                  </div>
+
+                  <div className="ve-text-toolbar__color">
+                    <input
+                      type="color"
+                      value={settingsState.text_color || '#ffffff'}
+                      onChange={(e) => updateSetting('text_color', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="ve-text-toolbar__row">
+                  <div className="ve-text-toolbar__align">
+                    {ALIGN_OPTIONS.map((a) => (
+                      <button
+                        key={a.value}
+                        className={`ve-text-toolbar__align-btn ${(settingsState.text_align || 'left') === a.value ? 've-text-toolbar__align-btn--active' : ''}`}
+                        onClick={() => updateSetting('text_align', a.value)}
+                        title={a.label}
+                      >
+                        <a.icon />
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="ve-color-input" style={{ marginLeft: 'auto' }}>
+                    <label className="ve-label--sm" style={{ marginRight: 6 }}>BG</label>
+                    <input
+                      type="color"
+                      value={settingsState.bg_color || '#5B2D8E'}
+                      onChange={(e) => updateSetting('bg_color', e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      className="ve-input-sm"
+                      style={{ width: 80 }}
+                      value={settingsState.bg_color || ''}
+                      onChange={(e) => updateSetting('bg_color', e.target.value)}
+                      placeholder="#5B2D8E"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className="ve-hero-preview"
+                style={{
+                  backgroundColor: settingsState.bg_color || '#5B2D8E',
+                  backgroundImage: bgImagePreview ? `url(${bgImagePreview})` : undefined,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
+                <textarea
+                  className="ve-hero-preview__input"
+                  style={textPreviewStyle}
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Hero title..."
+                  rows={3}
+                />
+                <input
+                  className="ve-hero-preview__subtitle"
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
+                  placeholder="Subtitle (optional)..."
+                />
+              </div>
+            </>
+          )}
+
           {/* ── Normal section mode (title + subtitle + cards) ── */}
-          {!isTextBlock && (
+          {!isTextBlock && !isHero && (
             <>
               <div className="ve-section-field">
                 <label className="ve-label">Section Title</label>
@@ -355,6 +520,62 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                   </div>
                 </div>
 
+                {/* Carousel-specific settings */}
+                {sType === 'card_carousel' && (
+                  <div className="ve-style-field">
+                    <label className="ve-label">Carousel Settings</label>
+                    <div className="ve-carousel-settings">
+                      <div className="ve-carousel-settings__row">
+                        <label className="ve-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={settingsState.autoplay !== false}
+                            onChange={(e) => updateSetting('autoplay', e.target.checked)}
+                          />
+                          <span>Autoplay</span>
+                        </label>
+                        {settingsState.autoplay !== false && (
+                          <div className="ve-carousel-settings__speed">
+                            <label className="ve-label--sm">Delay (ms)</label>
+                            <input
+                              type="number"
+                              className="ve-input-sm"
+                              min="1000"
+                              max="15000"
+                              step="500"
+                              value={settingsState.autoplay_delay || 4000}
+                              onChange={(e) => updateSetting('autoplay_delay', Number(e.target.value))}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      <div className="ve-carousel-settings__row">
+                        <label className="ve-checkbox-label">
+                          <input
+                            type="checkbox"
+                            checked={settingsState.loop !== false}
+                            onChange={(e) => updateSetting('loop', e.target.checked)}
+                          />
+                          <span>Loop (infinite scroll)</span>
+                        </label>
+                      </div>
+                      <div className="ve-carousel-settings__row">
+                        <label className="ve-label--sm">Slides per view (desktop)</label>
+                        <select
+                          className="ve-select"
+                          value={settingsState.slides_per_view || 3}
+                          onChange={(e) => updateSetting('slides_per_view', Number(e.target.value))}
+                        >
+                          <option value={1}>1</option>
+                          <option value={2}>2</option>
+                          <option value={3}>3</option>
+                          <option value={4}>4</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Cards alignment (only for sections with cards) */}
                 {hasCards && (
                   <div className="ve-style-field">
@@ -407,7 +628,9 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
           {hasCards && (
             <div className="ve-cards-section">
               <div className="ve-cards-header">
-                <span className="ve-cards-count">{items.length} item(s)</span>
+                <span className="ve-cards-count">
+                  {items.length} {isHero ? 'photo(s)' : 'item(s)'}
+                </span>
               </div>
 
               <div
@@ -424,10 +647,12 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                   />
                 ))}
 
-                <button className="ve-add-card" onClick={handleAddItem}>
-                  <FiPlus className="ve-add-card__icon" />
-                  <span>Add Card</span>
-                </button>
+                {!(isHero && items.length >= 1) && (
+                  <button className="ve-add-card" onClick={handleAddItem}>
+                    <FiPlus className="ve-add-card__icon" />
+                    <span>{isHero ? 'Add Photo' : 'Add Card'}</span>
+                  </button>
+                )}
               </div>
             </div>
           )}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   FiX, FiType, FiGrid, FiImage, FiSliders,
-  FiStar, FiUsers, FiMessageSquare, FiBookOpen, FiLayout,
+  FiStar, FiUsers, FiMessageSquare, FiBookOpen, FiLayout, FiYoutube,
 } from 'react-icons/fi';
 import { adminApi } from '../api';
 
@@ -68,6 +68,13 @@ const SECTION_TYPES = [
     desc: 'Cards with icons, titles and short descriptions.',
     icon: FiStar,
     preview: 'icons',
+  },
+  {
+    value: 'video_block',
+    label: 'YouTube Video',
+    desc: 'Embed a YouTube video by pasting a link.',
+    icon: FiYoutube,
+    preview: 'video',
   },
 ];
 
@@ -185,7 +192,7 @@ const PreviewMini = ({ type }) => {
       </div>
     );
   }
-  if (type === 'cards' || type === 'carousel') {
+  if (type === 'cards') {
     return (
       <div className="ve-mini ve-mini--cards">
         {[1, 2, 3].map((i) => (
@@ -194,6 +201,22 @@ const PreviewMini = ({ type }) => {
             <div className="ve-mini__line ve-mini__line--sm" />
           </div>
         ))}
+      </div>
+    );
+  }
+  if (type === 'carousel') {
+    return (
+      <div className="ve-mini ve-mini--carousel">
+        <div className="ve-mini__arrow">&lsaquo;</div>
+        <div className="ve-mini__slides">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="ve-mini__slide">
+              <div className="ve-mini__card-img" />
+              <div className="ve-mini__line ve-mini__line--sm" />
+            </div>
+          ))}
+        </div>
+        <div className="ve-mini__arrow">&rsaquo;</div>
       </div>
     );
   }
@@ -235,6 +258,15 @@ const PreviewMini = ({ type }) => {
             <div className="ve-mini__line ve-mini__line--sm" />
           </div>
         ))}
+      </div>
+    );
+  }
+  if (type === 'video') {
+    return (
+      <div className="ve-mini ve-mini--video">
+        <div className="ve-mini__video-box">
+          <div className="ve-mini__play">&#9654;</div>
+        </div>
       </div>
     );
   }

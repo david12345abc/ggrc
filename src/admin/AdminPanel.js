@@ -5,7 +5,13 @@ import AdminLogin from './AdminLogin';
 import AdminLayout from './AdminLayout';
 import AdminPageEditor from './AdminPageEditor';
 import UserManagement from './UserManagement';
-import './Admin.css';
+import './css/admin-layout.css';
+import './css/admin-common.css';
+import './css/admin-page-editor.css';
+import './css/admin-users.css';
+import './css/admin-ve-toolbar.css';
+import './css/admin-ve-cards.css';
+import './css/admin-ve-type-select.css';
 
 const AdminPanel = () => {
   const { user, loading } = useAuth();
