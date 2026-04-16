@@ -3,6 +3,10 @@
   min-height: 100vh;
 }
 
+.dynamic-page--service-detail {
+  padding-top: 0;
+}
+
 .dynamic-page__breadcrumb {
   background: #f9f5ff;
   padding: 14px 0;
@@ -52,6 +56,53 @@
   line-height: 1.7;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.dp-text-block__body--html {
+  white-space: normal;
+}
+
+.dp-text-block__body--html p {
+  margin: 0 0 1rem;
+}
+
+.dp-text-block__body--html h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 2rem 0 0.75rem;
+}
+
+.dp-text-block__body--html h2:first-child {
+  margin-top: 0;
+}
+
+.dp-text-block__body--html h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.dp-text-block__body--html ul.dp-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
+
+.dp-text-block__body--html ul.dp-checklist li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.65rem;
+  line-height: 1.55;
+}
+
+.dp-text-block__body--html ul.dp-checklist li::before {
+  content: '\2713';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: #111827;
 }
 
 /* Card Grid */

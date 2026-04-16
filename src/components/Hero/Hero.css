@@ -2,6 +2,72 @@
   margin-top: var(--header-height, 92px);
 }
 
+/* Service detail: full-bleed photo hero + overlay (same image as listing card) */
+.hero--service-detail .hero__bg {
+  position: relative;
+  padding: 28px 0 48px;
+  min-height: 220px;
+}
+
+.hero--service-detail .hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  pointer-events: none;
+}
+
+.hero--service-detail .hero__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.hero__breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 20px;
+}
+
+.hero__breadcrumb-link {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hero__breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.hero__breadcrumb-sep {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.hero__breadcrumb-current {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+
+.hero--service-detail .hero__title {
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+}
+
+@media (min-width: 768px) {
+  .hero--service-detail .hero__bg {
+    padding: 36px 0 56px;
+    min-height: 260px;
+  }
+
+  .hero__breadcrumb {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+}
+
 .hero__bg {
   background-color: var(--primary);
   padding: 60px 0 80px;

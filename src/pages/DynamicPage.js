@@ -41,11 +41,19 @@ const TextBlock = ({ data }) => {
   if (s.text_color) textStyle.color = s.text_color;
   if (s.text_align) textStyle.textAlign = s.text_align;
   const hasTextStyle = Object.keys(textStyle).length > 0;
+  const bodyIsHtml = s.body_format === 'html';
 
   return (
     <section className="dp-text-block" style={buildSectionStyle(data)}>
       <div className="container">
-        {s.body && (
+        {s.body && bodyIsHtml && (
+          <div
+            className="dp-text-block__body dp-text-block__body--html"
+            style={hasTextStyle ? textStyle : undefined}
+            dangerouslySetInnerHTML={{ __html: s.body }}
+          />
+        )}
+        {s.body && !bodyIsHtml && (
           <div
             className="dp-text-block__body"
             style={hasTextStyle ? textStyle : undefined}
@@ -150,16 +158,19 @@ const DynamicPage = () => {
   if (loading) return <div style={{ minHeight: '100vh' }} />;
 
   const breadcrumbTitle = PAGE_TITLES[slug]?.en || slug;
+  const isServiceDetailPage = /^service-/.test(slug);
 
   return (
-    <main className="dynamic-page">
-      <nav className="dynamic-page__breadcrumb" aria-label="Breadcrumb">
-        <div className="container dynamic-page__breadcrumb-inner">
-          <Link to="/" className="dynamic-page__breadcrumb-link">HOME</Link>
-          <span className="dynamic-page__breadcrumb-sep" aria-hidden> &gt; </span>
-          <span className="dynamic-page__breadcrumb-current">{breadcrumbTitle.toUpperCase()}</span>
-        </div>
-      </nav>
+    <main className={`dynamic-page${isServiceDetailPage ? ' dynamic-page--service-detail' : ''}`}>
+      {!isServiceDetailPage && (
+        <nav className="dynamic-page__breadcrumb" aria-label="Breadcrumb">
+          <div className="container dynamic-page__breadcrumb-inner">
+            <Link to="/" className="dynamic-page__breadcrumb-link">HOME</Link>
+            <span className="dynamic-page__breadcrumb-sep" aria-hidden> &gt; </span>
+            <span className="dynamic-page__breadcrumb-current">{breadcrumbTitle.toUpperCase()}</span>
+          </div>
+        </nav>
+      )}
 
       {sections.length === 0 && (
         <div className="dynamic-page__empty">

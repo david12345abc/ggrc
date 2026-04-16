@@ -5,12 +5,60 @@
 
 .ve-cards-header {
   margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 16px;
 }
 
 .ve-cards-count {
   font-size: 13px;
   font-weight: 600;
   color: #6b7280;
+}
+
+.ve-cards-reorder-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.ve-card-drag-wrap {
+  min-width: 0;
+}
+
+.ve-card-drag-wrap--team {
+  display: flex;
+  flex-direction: column;
+}
+
+.ve-card-drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.ve-card-drag-handle:active {
+  cursor: grabbing;
+}
+
+.ve-card-drag-wrap--team .ve-card {
+  border-radius: 0 0 10px 10px;
+}
+
+.ve-card-drag-wrap--dragging {
+  opacity: 0.6;
 }
 
 .ve-cards-grid {
@@ -236,6 +284,25 @@
 
 .ve-card__author-input:focus { outline: none; background: #faf5ff; }
 
+/* Services: whole card is the link on public site */
+.ve-services-link-hint {
+  margin: 0 14px 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.45;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.ve-services-link-hint code {
+  font-size: 11px;
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
 /* Link section */
 .ve-card__link-section { padding: 0 14px 12px; }
 
@@ -285,8 +352,31 @@
 .ve-link-mode-tab:first-child { border-right: 1px solid #d1d5db; }
 .ve-link-mode-tab--active { background: #5B2D8E; color: #fff; }
 
+.ve-link-editor__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.ve-link-remove {
+  padding: 4px 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #6b7280;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ve-link-remove:hover {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
 .ve-link-done {
-  align-self: flex-end;
   padding: 4px 10px;
   border: none;
   background: #5B2D8E;

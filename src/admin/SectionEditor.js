@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import {
-  FiX, FiPlus, FiSave, FiChevronDown, FiChevronUp, FiImage,
+  FiX, FiPlus, FiSave, FiChevronDown, FiChevronUp, FiImage, FiMove,
   FiAlignLeft, FiAlignCenter, FiAlignRight, FiAlignJustify,
 } from 'react-icons/fi';
 import { adminApi } from '../api';
@@ -110,6 +110,58 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
   const handleItemUpdated = useCallback(() => {
     reloadItems();
   }, [reloadItems]);
+
+  const sortedItems = useMemo(
+    () => [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+    [items],
+  );
+
+  const [teamDragId, setTeamDragId] = useState(null);
+
+  const handleTeamDragStart = useCallback((e, itemId) => {
+    setTeamDragId(itemId);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', String(itemId));
+  }, []);
+
+  const handleTeamDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const handleTeamDrop = useCallback(async (e, targetId) => {
+    e.preventDefault();
+    const sourceId = parseInt(e.dataTransfer.getData('text/plain'), 10);
+    setTeamDragId(null);
+    if (!sourceId || sourceId === targetId) return;
+
+    const orderIds = sortedItems.map((i) => i.id);
+    const fromIdx = orderIds.indexOf(sourceId);
+    const toIdx = orderIds.indexOf(targetId);
+    if (fromIdx < 0 || toIdx < 0) return;
+
+    const next = [...orderIds];
+    next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, sourceId);
+
+    try {
+      await Promise.all(
+        next.map((itemId, index) => {
+          const fd = new FormData();
+          fd.append('order', String(index));
+          fd.append('section', String(section.id));
+          return adminApi.updateItem(itemId, fd);
+        }),
+      );
+      reloadItems();
+    } catch (err) {
+      alert('Reorder failed: ' + (err.response?.data?.detail || err.message));
+    }
+  }, [sortedItems, section.id, reloadItems]);
+
+  const handleTeamDragEnd = useCallback(() => {
+    setTeamDragId(null);
+  }, []);
 
   const handleAddItem = async () => {
     try {
@@ -631,20 +683,48 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 <span className="ve-cards-count">
                   {items.length} {isHero ? 'photo(s)' : 'item(s)'}
                 </span>
+                {sType === 'team' && items.length > 1 && (
+                  <span className="ve-cards-reorder-hint">Drag the handle on a card to change order</span>
+                )}
               </div>
 
               <div
                 className={`ve-cards-grid ve-cards-grid--${sType}`}
                 style={settingsState.bg_color ? { background: settingsState.bg_color, padding: 16, borderRadius: 12 } : undefined}
               >
-                {items.map((item) => (
-                  <CardEditor
+                {sortedItems.map((item) => (
+                  <div
                     key={item.id}
-                    item={item}
-                    sectionType={sType}
-                    onDelete={() => handleDeleteItem(item.id)}
-                    onUpdated={handleItemUpdated}
-                  />
+                    className={
+                      `ve-card-drag-wrap${sType === 'team' ? ' ve-card-drag-wrap--team' : ''}${
+                        teamDragId === item.id ? ' ve-card-drag-wrap--dragging' : ''
+                      }`
+                    }
+                    onDragOver={sType === 'team' ? handleTeamDragOver : undefined}
+                    onDrop={sType === 'team' ? (ev) => handleTeamDrop(ev, item.id) : undefined}
+                    onDragEnd={sType === 'team' ? handleTeamDragEnd : undefined}
+                  >
+                    {sType === 'team' && (
+                      <div
+                        className="ve-card-drag-handle"
+                        draggable
+                        onDragStart={(ev) => handleTeamDragStart(ev, item.id)}
+                        title="Drag to reorder"
+                        role="button"
+                        tabIndex={0}
+                        aria-grabbed={teamDragId === item.id}
+                      >
+                        <FiMove aria-hidden />
+                        <span>Reorder</span>
+                      </div>
+                    )}
+                    <CardEditor
+                      item={item}
+                      sectionType={sType}
+                      onDelete={() => handleDeleteItem(item.id)}
+                      onUpdated={handleItemUpdated}
+                    />
+                  </div>
                 ))}
 
                 {!(isHero && items.length >= 1) && (

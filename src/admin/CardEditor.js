@@ -213,13 +213,26 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
               onLinkTextChange={(v) => { setLinkText(v); markDirty(); }}
               onLinkUrlChange={(v) => { setLinkUrl(v); markDirty(); }}
               onDone={() => setShowLinkEditor(false)}
+              hideLinkText={sectionType === 'services'}
+              listAllPages={sectionType === 'services'}
             />
           ) : (
-            <button className="ve-card__link-btn" onClick={() => setShowLinkEditor(true)}>
-              <FiLink /> {linkText || 'Add link'}
+            <button type="button" className="ve-card__link-btn" onClick={() => setShowLinkEditor(true)}>
+              <FiLink />
+              {sectionType === 'services'
+                ? (linkUrl ? 'Edit link / detach' : 'Attach link (page or URL)')
+                : (linkText || 'Add link')}
             </button>
           )}
         </div>
+      )}
+
+      {sectionType === 'services' && !showLinkEditor && (
+        <p className="ve-services-link-hint">
+          {linkUrl
+            ? <>On the site the whole card is clickable and opens: <strong>{linkUrl}</strong></>
+            : <>No link — the card is not clickable. Use &quot;Attach link&quot; to bind a page or URL.</>}
+        </p>
       )}
 
       {dirty && (
@@ -241,49 +254,96 @@ const CardEditor = ({ item, sectionType, onDelete, onUpdated }) => {
   );
 };
 
-const LinkEditor = ({ linkText, linkUrl, onLinkTextChange, onLinkUrlChange, onDone }) => {
-  const [mode, setMode] = useState(
-    linkUrl && !linkUrl.startsWith('/page/') && !linkUrl.startsWith('http') ? 'external' :
-    linkUrl && linkUrl.startsWith('/page/') ? 'page' : 'external'
-  );
+function internalPathForPage(p) {
+  if (!p) return '';
+  if (p.slug === 'home') return '/';
+  if (p.show_in_nav) return `/${p.slug}`;
+  return `/page/${p.slug}`;
+}
+
+function slugFromInternalPath(url) {
+  if (!url || !String(url).trim()) return '';
+  let u = String(url).trim().split('?')[0];
+  if (u.length > 1 && u.endsWith('/')) u = u.slice(0, -1);
+  if (u === '/' || u === '') return 'home';
+  const pageMatch = u.match(/^\/page\/([^/]+)$/);
+  if (pageMatch) return pageMatch[1];
+  const pathMatch = u.match(/^\/([^/]+)$/);
+  if (pathMatch) return pathMatch[1];
+  return '';
+}
+
+const LinkEditor = ({
+  linkText,
+  linkUrl,
+  onLinkTextChange,
+  onLinkUrlChange,
+  onDone,
+  hideLinkText = false,
+  listAllPages = false,
+}) => {
+  const [mode, setMode] = useState(() => {
+    if (!linkUrl) return 'page';
+    if (/^https?:\/\//i.test(linkUrl)) return 'external';
+    return 'page';
+  });
   const [pages, setPages] = useState([]);
 
   useEffect(() => {
+    if (!linkUrl) setMode('page');
+    else if (/^https?:\/\//i.test(linkUrl)) setMode('external');
+    else setMode('page');
+  }, [linkUrl]);
+
+  useEffect(() => {
     publicApi.getPages().then(({ data }) => {
-      setPages(data.filter((p) => !p.show_in_nav));
+      const list = listAllPages
+        ? [...data].sort((a, b) => (a.title || '').localeCompare(b.title || '', undefined, { sensitivity: 'base' }))
+        : data.filter((p) => !p.show_in_nav);
+      setPages(list);
     }).catch(() => {});
-  }, []);
+  }, [listAllPages]);
 
   const handlePageSelect = (slug) => {
-    if (slug) {
-      onLinkUrlChange(`/page/${slug}`);
-    } else {
+    if (!slug) {
       onLinkUrlChange('');
+      return;
+    }
+    if (listAllPages) {
+      const p = pages.find((x) => x.slug === slug);
+      onLinkUrlChange(p ? internalPathForPage(p) : `/page/${slug}`);
+    } else {
+      onLinkUrlChange(`/page/${slug}`);
     }
   };
 
-  const selectedSlug = linkUrl?.startsWith('/page/') ? linkUrl.replace('/page/', '') : '';
+  const selectedSlug = mode === 'page' ? slugFromInternalPath(linkUrl) : '';
+  const pageTabLabel = listAllPages ? 'Site page' : 'Your Page';
 
   return (
     <div className="ve-card__link-editor">
-      <input
-        className="ve-input-sm"
-        value={linkText}
-        onChange={(e) => onLinkTextChange(e.target.value)}
-        placeholder="Link text (e.g. READ MORE)"
-      />
+      {!hideLinkText && (
+        <input
+          className="ve-input-sm"
+          value={linkText}
+          onChange={(e) => onLinkTextChange(e.target.value)}
+          placeholder="Link text (e.g. READ MORE)"
+        />
+      )}
       <div className="ve-link-mode-tabs">
         <button
+          type="button"
           className={`ve-link-mode-tab ${mode === 'external' ? 've-link-mode-tab--active' : ''}`}
-          onClick={() => { setMode('external'); onLinkUrlChange(''); }}
+          onClick={() => setMode('external')}
         >
           External URL
         </button>
         <button
+          type="button"
           className={`ve-link-mode-tab ${mode === 'page' ? 've-link-mode-tab--active' : ''}`}
-          onClick={() => { setMode('page'); onLinkUrlChange(''); }}
+          onClick={() => setMode('page')}
         >
-          Your Page
+          {pageTabLabel}
         </button>
       </div>
       {mode === 'external' ? (
@@ -291,7 +351,7 @@ const LinkEditor = ({ linkText, linkUrl, onLinkTextChange, onLinkUrlChange, onDo
           className="ve-input-sm"
           value={linkUrl}
           onChange={(e) => onLinkUrlChange(e.target.value)}
-          placeholder="URL (e.g. https://...)"
+          placeholder="URL (e.g. https://... or /services)"
         />
       ) : (
         <select
@@ -299,13 +359,28 @@ const LinkEditor = ({ linkText, linkUrl, onLinkTextChange, onLinkUrlChange, onDo
           value={selectedSlug}
           onChange={(e) => handlePageSelect(e.target.value)}
         >
-          <option value="">Select a page...</option>
+          <option value="">{listAllPages ? 'Choose a page…' : 'Select a page...'}</option>
           {pages.map((p) => (
-            <option key={p.id} value={p.slug}>{p.title}</option>
+            <option key={p.id} value={p.slug}>
+              {p.title}{listAllPages && p.show_in_nav ? ' (menu)' : ''}
+            </option>
           ))}
         </select>
       )}
-      <button className="ve-link-done" onClick={onDone}>Done</button>
+      <div className="ve-link-editor__actions">
+        <button
+          type="button"
+          className="ve-link-remove"
+          onClick={() => {
+            onLinkUrlChange('');
+            onLinkTextChange('');
+            setMode('page');
+          }}
+        >
+          Remove link
+        </button>
+        <button type="button" className="ve-link-done" onClick={onDone}>Done</button>
+      </div>
     </div>
   );
 };

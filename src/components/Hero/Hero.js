@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { getImgPosition } from '../../utils/imgPosition';
 import './Hero.css';
 
@@ -8,6 +9,7 @@ const Hero = ({ data }) => {
   const heroImage = data.items?.[0];
   const imgSrc = heroImage?.image_url || '/images/doctors-hero.png';
   const objPos = getImgPosition(heroImage);
+  const isServiceDetail = Boolean(s.service_detail_hero);
 
   const bgStyle = {};
   if (s.bg_color) bgStyle.backgroundColor = s.bg_color;
@@ -15,6 +17,11 @@ const Hero = ({ data }) => {
     bgStyle.backgroundImage = `url(${data.background_image_url})`;
     bgStyle.backgroundSize = 'cover';
     bgStyle.backgroundPosition = 'center';
+  }
+  if (isServiceDetail && heroImage?.image_url) {
+    bgStyle.backgroundImage = `url(${heroImage.image_url})`;
+    bgStyle.backgroundSize = 'cover';
+    bgStyle.backgroundPosition = objPos || 'center';
   }
 
   const titleStyle = {};
@@ -29,9 +36,20 @@ const Hero = ({ data }) => {
   if (s.margin_bottom) sectionStyle.marginBottom = `${s.margin_bottom}px`;
 
   return (
-    <section className="hero" id="home" style={Object.keys(sectionStyle).length ? sectionStyle : undefined}>
+    <section
+      className={`hero${isServiceDetail ? ' hero--service-detail' : ''}`}
+      id="home"
+      style={Object.keys(sectionStyle).length ? sectionStyle : undefined}
+    >
       <div className="hero__bg" style={Object.keys(bgStyle).length ? bgStyle : undefined}>
         <div className="container hero__inner">
+          {s.service_breadcrumb && (
+            <nav className="hero__breadcrumb" aria-label="Breadcrumb">
+              <Link to="/" className="hero__breadcrumb-link">HOME</Link>
+              <span className="hero__breadcrumb-sep" aria-hidden> &gt; </span>
+              <span className="hero__breadcrumb-current">SERVICE DETAILS</span>
+            </nav>
+          )}
           <div className="hero__row">
             <h1 className="hero__title" style={Object.keys(titleStyle).length ? titleStyle : undefined}>
               {data.title}
@@ -39,15 +57,19 @@ const Hero = ({ data }) => {
             {data.subtitle && (
               <p className="hero__subtitle">{data.subtitle}</p>
             )}
-            <div className="hero__desktop-photo">
-              <img src={imgSrc} alt="" className="hero__desktop-img" style={objPos ? { objectPosition: objPos } : undefined} />
-            </div>
+            {!isServiceDetail && (
+              <div className="hero__desktop-photo">
+                <img src={imgSrc} alt="" className="hero__desktop-img" style={objPos ? { objectPosition: objPos } : undefined} />
+              </div>
+            )}
           </div>
         </div>
       </div>
-      <div className="hero__image hero__image--mobile">
-        <img src={imgSrc} alt="" className="hero__img" style={objPos ? { objectPosition: objPos } : undefined} />
-      </div>
+      {!isServiceDetail && (
+        <div className="hero__image hero__image--mobile">
+          <img src={imgSrc} alt="" className="hero__img" style={objPos ? { objectPosition: objPos } : undefined} />
+        </div>
+      )}
     </section>
   );
 };
