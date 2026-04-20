@@ -193,6 +193,23 @@
 .sp--text-block__body {
   font-size: 14px; color: #374151; line-height: 1.6;
   white-space: pre-wrap; word-wrap: break-word;
+  max-height: 220px; overflow: hidden; position: relative;
+}
+.sp--text-block__body.dp-text-block__body--html {
+  white-space: normal;
+  font-size: 13px;
+}
+.sp--text-block__body.dp-text-block__body--html h1,
+.sp--text-block__body.dp-text-block__body--html h2,
+.sp--text-block__body.dp-text-block__body--html h3,
+.sp--text-block__body.dp-text-block__body--html h4 {
+  margin: 0.5rem 0 0.35rem;
+  font-size: 15px;
+}
+.sp--text-block__body.dp-text-block__body--html p,
+.sp--text-block__body.dp-text-block__body--html ul,
+.sp--text-block__body.dp-text-block__body--html ol {
+  margin: 0 0 0.4rem;
 }
 
 .sp--about-text { padding: 16px; }

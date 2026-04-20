@@ -5,9 +5,12 @@ import {
 } from 'react-icons/fi';
 import { adminApi } from '../api';
 import CardEditor from './CardEditor';
+import useAdminT from './i18n';
+import '../pages/DynamicPage.css';
 
-const FONT_OPTIONS = [
-  { value: '', label: 'Default' },
+const HTML_TAG_RE = /<\/?[a-zA-Z][\s\S]*?>/;
+
+const FONT_OPTIONS_BASE = [
   { value: 'Arial, sans-serif', label: 'Arial' },
   { value: 'Georgia, serif', label: 'Georgia' },
   { value: "'Times New Roman', serif", label: 'Times New Roman' },
@@ -18,29 +21,6 @@ const FONT_OPTIONS = [
   { value: "'Roboto', sans-serif", label: 'Roboto' },
   { value: "'Open Sans', sans-serif", label: 'Open Sans' },
   { value: "'Montserrat', sans-serif", label: 'Montserrat' },
-];
-
-const ALIGN_OPTIONS = [
-  { value: 'left', icon: FiAlignLeft, label: 'Left' },
-  { value: 'center', icon: FiAlignCenter, label: 'Center' },
-  { value: 'right', icon: FiAlignRight, label: 'Right' },
-  { value: 'justify', icon: FiAlignJustify, label: 'Justify' },
-];
-
-const WEIGHT_OPTIONS = [
-  { value: '300', label: 'Light' },
-  { value: '400', label: 'Normal' },
-  { value: '500', label: 'Medium' },
-  { value: '600', label: 'Semi-Bold' },
-  { value: '700', label: 'Bold' },
-  { value: '800', label: 'Extra Bold' },
-];
-
-const CARDS_ALIGN_OPTIONS = [
-  { value: 'left', icon: FiAlignLeft, label: 'Left' },
-  { value: 'center', icon: FiAlignCenter, label: 'Center' },
-  { value: 'right', icon: FiAlignRight, label: 'Right' },
-  { value: 'stretch', icon: FiAlignJustify, label: 'Full width' },
 ];
 
 function extractYouTubeId(url) {
@@ -66,6 +46,35 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
   const [bgImageFile, setBgImageFile] = useState(null);
   const [bgImagePreview, setBgImagePreview] = useState(section.background_image_url || null);
   const bgFileRef = useRef();
+  const t = useAdminT();
+
+  const FONT_OPTIONS = useMemo(() => [
+    { value: '', label: t.common.default },
+    ...FONT_OPTIONS_BASE,
+  ], [t.common.default]);
+
+  const ALIGN_OPTIONS = useMemo(() => [
+    { value: 'left', icon: FiAlignLeft, label: t.section.alignLeft },
+    { value: 'center', icon: FiAlignCenter, label: t.section.alignCenter },
+    { value: 'right', icon: FiAlignRight, label: t.section.alignRight },
+    { value: 'justify', icon: FiAlignJustify, label: t.section.alignJustify },
+  ], [t.section.alignLeft, t.section.alignCenter, t.section.alignRight, t.section.alignJustify]);
+
+  const WEIGHT_OPTIONS = useMemo(() => [
+    { value: '300', label: t.section.weightLight },
+    { value: '400', label: t.section.weightNormal },
+    { value: '500', label: t.section.weightMedium },
+    { value: '600', label: t.section.weightSemiBold },
+    { value: '700', label: t.section.weightBold },
+    { value: '800', label: t.section.weightExtraBold },
+  ], [t.section.weightLight, t.section.weightNormal, t.section.weightMedium, t.section.weightSemiBold, t.section.weightBold, t.section.weightExtraBold]);
+
+  const CARDS_ALIGN_OPTIONS = useMemo(() => [
+    { value: 'left', icon: FiAlignLeft, label: t.section.alignLeft },
+    { value: 'center', icon: FiAlignCenter, label: t.section.alignCenter },
+    { value: 'right', icon: FiAlignRight, label: t.section.alignRight },
+    { value: 'stretch', icon: FiAlignJustify, label: t.section.alignFullWidth },
+  ], [t.section.alignLeft, t.section.alignCenter, t.section.alignRight, t.section.alignFullWidth]);
 
   const sType = section.section_type;
   const isTextBlock = sType === 'text_block';
@@ -95,14 +104,14 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
       await adminApi.updateSection(section.id, fd);
       onSaved();
     } catch (err) {
-      alert('Error: ' + (err.response?.data?.detail || err.message));
+      alert(t.common.error + ': ' + (err.response?.data?.detail || err.message));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteItem = async (itemId) => {
-    if (!window.confirm('Delete this item?')) return;
+    if (!window.confirm(t.section.deleteItemConfirm)) return;
     await adminApi.deleteItem(itemId);
     setItems((prev) => prev.filter((i) => i.id !== itemId));
   };
@@ -155,9 +164,9 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
       );
       reloadItems();
     } catch (err) {
-      alert('Reorder failed: ' + (err.response?.data?.detail || err.message));
+      alert(t.section.reorderFail + (err.response?.data?.detail || err.message));
     }
-  }, [sortedItems, section.id, reloadItems]);
+  }, [sortedItems, section.id, reloadItems, t.section.reorderFail]);
 
   const handleTeamDragEnd = useCallback(() => {
     setTeamDragId(null);
@@ -174,7 +183,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
       const { data } = await adminApi.createItem(fd);
       setItems((prev) => [...prev, data]);
     } catch (err) {
-      alert('Error: ' + (err.response?.data?.detail || err.message));
+      alert(t.common.error + ': ' + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -210,7 +219,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()}>
         <div className="admin-modal__header">
-          <h2>{isTextBlock ? 'Edit Text Block' : isVideo ? 'Edit Video Block' : 'Edit Section'}</h2>
+          <h2>{isTextBlock ? t.section.editTextBlock : isVideo ? t.section.editVideoBlock : t.section.editSection}</h2>
           <button className="admin-modal__close" onClick={onClose}><FiX /></button>
         </div>
 
@@ -279,17 +288,93 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 </div>
               </div>
 
-              {/* Live-preview text area */}
-              <div className="ve-text-preview" style={{ backgroundColor: settingsState.bg_color || undefined }}>
-                <textarea
-                  className="ve-text-preview__input"
-                  style={textPreviewStyle}
-                  value={settingsState.body || ''}
-                  onChange={(e) => updateSetting('body', e.target.value)}
-                  placeholder="Enter your text here..."
-                  rows={8}
-                />
+              {/* Format toggle */}
+              <div className="ve-text-format">
+                <div className="ve-text-format__toggle" role="tablist" aria-label={t.section.textFormatPlain}>
+                  <button
+                    type="button"
+                    className={`ve-text-format__tab ${(settingsState.body_format || 'plain') !== 'html' ? 've-text-format__tab--active' : ''}`}
+                    onClick={() => updateSetting('body_format', 'plain')}
+                  >
+                    {t.section.textFormatPlain}
+                  </button>
+                  <button
+                    type="button"
+                    className={`ve-text-format__tab ${settingsState.body_format === 'html' ? 've-text-format__tab--active' : ''}`}
+                    onClick={() => updateSetting('body_format', 'html')}
+                  >
+                    {t.section.textFormatHtml}
+                  </button>
+                </div>
+                {settingsState.body_format === 'html' && (
+                  <div className="ve-text-format__hint">
+                    {t.section.htmlHint}
+                  </div>
+                )}
               </div>
+
+              {/* Quick insert toolbar for HTML mode */}
+              {settingsState.body_format === 'html' && (
+                <div className="ve-text-insert">
+                  {[
+                    { label: t.section.snippetH2, snippet: '<h2>Heading</h2>\n' },
+                    { label: t.section.snippetH3, snippet: '<h3>Subheading</h3>\n' },
+                    { label: t.section.snippetParagraph, snippet: '<p>Your paragraph text…</p>\n' },
+                    { label: t.section.snippetBullet, snippet: '<ul>\n  <li>Item one</li>\n  <li>Item two</li>\n</ul>\n' },
+                    { label: t.section.snippetCheck, snippet: '<ul class="dp-checklist">\n  <li>First point</li>\n  <li>Second point</li>\n</ul>\n' },
+                    { label: t.section.snippetQuote, snippet: '<blockquote>Quoted text…</blockquote>\n' },
+                    { label: t.section.snippetBold, snippet: '<strong>bold text</strong>' },
+                    { label: t.section.snippetItalic, snippet: '<em>italic text</em>' },
+                    { label: t.section.snippetLink, snippet: '<a href="https://">link text</a>' },
+                  ].map((btn) => (
+                    <button
+                      key={btn.label}
+                      type="button"
+                      className="ve-text-insert__btn"
+                      onClick={() => updateSetting('body', `${settingsState.body || ''}${settingsState.body ? '\n' : ''}${btn.snippet}`)}
+                    >
+                      {btn.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Split editor + live preview */}
+              <div className={`ve-text-editor ${settingsState.body_format === 'html' ? 've-text-editor--split' : ''}`}>
+                <div className="ve-text-preview" style={{ backgroundColor: settingsState.bg_color || undefined }}>
+                  <textarea
+                    className="ve-text-preview__input"
+                    style={textPreviewStyle}
+                    value={settingsState.body || ''}
+                    onChange={(e) => updateSetting('body', e.target.value)}
+                    placeholder={settingsState.body_format === 'html'
+                      ? t.section.htmlPlaceholder
+                      : t.section.plainPlaceholder}
+                    rows={10}
+                  />
+                </div>
+
+                {settingsState.body_format === 'html' && (
+                  <div className="ve-text-livepreview" style={{ backgroundColor: settingsState.bg_color || undefined }}>
+                    <div className="ve-text-livepreview__label">{t.section.livePreviewLabel}</div>
+                    {(settingsState.body || '').trim() ? (
+                      <div
+                        className="dp-text-block__body dp-text-block__body--html"
+                        style={textPreviewStyle}
+                        dangerouslySetInnerHTML={{ __html: settingsState.body }}
+                      />
+                    ) : (
+                      <div className="ve-text-livepreview__empty">{t.section.livePreviewEmpty}</div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {settingsState.body_format !== 'html' && HTML_TAG_RE.test(settingsState.body || '') && (
+                <div className="ve-text-format__warning">
+                  {t.section.htmlWarning}
+                </div>
+              )}
             </>
           )}
 
@@ -297,22 +382,22 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
           {isVideo && (
             <>
               <div className="ve-section-field">
-                <label className="ve-label">Section Title (optional)</label>
+                <label className="ve-label">{t.section.sectionTitleOptional}</label>
                 <input
                   className="ve-input ve-input--lg"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Watch Our Story"
+                  placeholder={t.section.sectionTitleVideoPlaceholder}
                 />
               </div>
 
               <div className="ve-section-field">
-                <label className="ve-label">YouTube Link</label>
+                <label className="ve-label">{t.section.youtubeLink}</label>
                 <input
                   className="ve-input"
                   value={settingsState.video_url || ''}
                   onChange={(e) => updateSetting('video_url', e.target.value)}
-                  placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/..."
+                  placeholder={t.section.youtubeLinkPlaceholder}
                 />
               </div>
 
@@ -331,7 +416,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
 
               {settingsState.video_url && !extractYouTubeId(settingsState.video_url) && (
                 <p style={{ color: '#dc2626', fontSize: 13 }}>
-                  Could not parse YouTube video ID. Please paste a valid YouTube link.
+                  {t.section.youtubeParseError}
                 </p>
               )}
             </>
@@ -430,14 +515,14 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                   style={textPreviewStyle}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Hero title..."
+                  placeholder={t.section.heroTitlePlaceholder}
                   rows={3}
                 />
                 <input
                   className="ve-hero-preview__subtitle"
                   value={subtitle}
                   onChange={(e) => setSubtitle(e.target.value)}
-                  placeholder="Subtitle (optional)..."
+                  placeholder={t.section.heroSubtitlePlaceholder}
                 />
               </div>
             </>
@@ -447,24 +532,24 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
           {!isTextBlock && !isHero && (
             <>
               <div className="ve-section-field">
-                <label className="ve-label">Section Title</label>
+                <label className="ve-label">{t.section.sectionTitle}</label>
                 <input
                   className="ve-input ve-input--lg"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter section title..."
+                  placeholder={t.section.sectionTitlePlaceholder}
                   style={settingsState.title_color ? { color: settingsState.title_color } : undefined}
                 />
               </div>
 
               {(subtitle || sType === 'services' || sType === 'team') && (
                 <div className="ve-section-field">
-                  <label className="ve-label">Subtitle</label>
+                  <label className="ve-label">{t.section.subtitle}</label>
                   <textarea
                     className="ve-textarea"
                     value={subtitle}
                     onChange={(e) => setSubtitle(e.target.value)}
-                    placeholder="Enter subtitle..."
+                    placeholder={t.section.subtitlePlaceholder}
                     rows={2}
                   />
                 </div>
@@ -472,7 +557,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
 
               {hasTextSettings && settingsState.bold_text !== undefined && (
                 <div className="ve-section-field">
-                  <label className="ve-label">Main Text</label>
+                  <label className="ve-label">{t.section.mainText}</label>
                   <textarea
                     className="ve-textarea"
                     value={settingsState.bold_text || ''}
@@ -483,7 +568,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
               )}
               {hasTextSettings && settingsState.lead !== undefined && (
                 <div className="ve-section-field">
-                  <label className="ve-label">Description</label>
+                  <label className="ve-label">{t.section.description}</label>
                   <textarea
                     className="ve-textarea"
                     value={settingsState.lead || ''}
@@ -494,7 +579,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
               )}
               {hasTextSettings && settingsState.body !== undefined && (
                 <div className="ve-section-field">
-                  <label className="ve-label">Body Text</label>
+                  <label className="ve-label">{t.section.bodyText}</label>
                   <textarea
                     className="ve-textarea"
                     value={settingsState.body || ''}
@@ -513,7 +598,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
               onClick={() => setShowStylePanel(!showStylePanel)}
             >
               {showStylePanel ? <FiChevronUp /> : <FiChevronDown />}
-              <span>Style Settings</span>
+              <span>{t.section.styleSettings}</span>
             </button>
 
             {showStylePanel && (
@@ -521,7 +606,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 <div className="ve-style-row">
                   {!isTextBlock && (
                     <div className="ve-style-field">
-                      <label className="ve-label">Title Color</label>
+                      <label className="ve-label">{t.section.titleColor}</label>
                       <div className="ve-color-input">
                         <input
                           type="color"
@@ -540,7 +625,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                   )}
 
                   <div className="ve-style-field">
-                    <label className="ve-label">Background Color</label>
+                    <label className="ve-label">{t.section.bgColor}</label>
                     <div className="ve-color-input">
                       <input
                         type="color"
@@ -558,7 +643,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                   </div>
 
                   <div className="ve-style-field">
-                    <label className="ve-label">Bottom Margin (px)</label>
+                    <label className="ve-label">{t.section.bottomMargin}</label>
                     <div className="ve-range-input">
                       <input
                         type="range"
@@ -575,7 +660,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 {/* Carousel-specific settings */}
                 {sType === 'card_carousel' && (
                   <div className="ve-style-field">
-                    <label className="ve-label">Carousel Settings</label>
+                    <label className="ve-label">{t.section.carouselSettings}</label>
                     <div className="ve-carousel-settings">
                       <div className="ve-carousel-settings__row">
                         <label className="ve-checkbox-label">
@@ -584,11 +669,11 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                             checked={settingsState.autoplay !== false}
                             onChange={(e) => updateSetting('autoplay', e.target.checked)}
                           />
-                          <span>Autoplay</span>
+                          <span>{t.section.autoplay}</span>
                         </label>
                         {settingsState.autoplay !== false && (
                           <div className="ve-carousel-settings__speed">
-                            <label className="ve-label--sm">Delay (ms)</label>
+                            <label className="ve-label--sm">{t.section.delayMs}</label>
                             <input
                               type="number"
                               className="ve-input-sm"
@@ -608,11 +693,11 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                             checked={settingsState.loop !== false}
                             onChange={(e) => updateSetting('loop', e.target.checked)}
                           />
-                          <span>Loop (infinite scroll)</span>
+                          <span>{t.section.loopInfinite}</span>
                         </label>
                       </div>
                       <div className="ve-carousel-settings__row">
-                        <label className="ve-label--sm">Slides per view (desktop)</label>
+                        <label className="ve-label--sm">{t.section.slidesPerView}</label>
                         <select
                           className="ve-select"
                           value={settingsState.slides_per_view || 3}
@@ -631,7 +716,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 {/* Cards alignment (only for sections with cards) */}
                 {hasCards && (
                   <div className="ve-style-field">
-                    <label className="ve-label">Cards Alignment</label>
+                    <label className="ve-label">{t.section.cardsAlignment}</label>
                     <div className="ve-text-toolbar__align">
                       {CARDS_ALIGN_OPTIONS.map((a) => (
                         <button
@@ -649,24 +734,24 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 )}
 
                 <div className="ve-style-field">
-                  <label className="ve-label">Background Image</label>
+                  <label className="ve-label">{t.section.bgImage}</label>
                   <div className="ve-bg-image-area">
                     {bgImagePreview ? (
                       <div className="ve-bg-image-preview">
                         <img src={bgImagePreview} alt="" />
                         <div className="ve-bg-image-actions">
                           <button className="admin-btn admin-btn--sm" onClick={() => bgFileRef.current?.click()}>
-                            Change
+                            {t.common.change}
                           </button>
                           <button className="admin-btn admin-btn--sm" onClick={handleRemoveBgImage} style={{ color: '#dc2626' }}>
-                            Remove
+                            {t.common.remove}
                           </button>
                         </div>
                       </div>
                     ) : (
                       <button className="ve-bg-image-upload" onClick={() => bgFileRef.current?.click()}>
                         <FiImage />
-                        <span>Add background image</span>
+                        <span>{t.section.addBgImage}</span>
                       </button>
                     )}
                     <input ref={bgFileRef} type="file" accept="image/*" onChange={handleBgImageChange} hidden />
@@ -681,10 +766,10 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
             <div className="ve-cards-section">
               <div className="ve-cards-header">
                 <span className="ve-cards-count">
-                  {items.length} {isHero ? 'photo(s)' : 'item(s)'}
+                  {isHero ? t.section.photosCount(items.length) : t.section.itemsCount(items.length)}
                 </span>
                 {sType === 'team' && items.length > 1 && (
-                  <span className="ve-cards-reorder-hint">Drag the handle on a card to change order</span>
+                  <span className="ve-cards-reorder-hint">{t.section.teamReorderHint}</span>
                 )}
               </div>
 
@@ -709,13 +794,13 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                         className="ve-card-drag-handle"
                         draggable
                         onDragStart={(ev) => handleTeamDragStart(ev, item.id)}
-                        title="Drag to reorder"
+                        title={t.section.dragToReorder}
                         role="button"
                         tabIndex={0}
                         aria-grabbed={teamDragId === item.id}
                       >
                         <FiMove aria-hidden />
-                        <span>Reorder</span>
+                        <span>{t.section.reorder}</span>
                       </div>
                     )}
                     <CardEditor
@@ -730,7 +815,7 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
                 {!(isHero && items.length >= 1) && (
                   <button className="ve-add-card" onClick={handleAddItem}>
                     <FiPlus className="ve-add-card__icon" />
-                    <span>{isHero ? 'Add Photo' : 'Add Card'}</span>
+                    <span>{isHero ? t.section.addPhoto : t.section.addCard}</span>
                   </button>
                 )}
               </div>
@@ -739,9 +824,9 @@ const SectionEditor = ({ section, onClose, onSaved }) => {
         </div>
 
         <div className="admin-modal__footer">
-          <button className="admin-btn" onClick={onClose}>Cancel</button>
+          <button className="admin-btn" onClick={onClose}>{t.common.cancel}</button>
           <button className="admin-btn admin-btn--primary" onClick={handleSaveSection} disabled={saving}>
-            <FiSave /> {saving ? 'Saving...' : 'Save'}
+            <FiSave /> {saving ? t.common.saving : t.common.save}
           </button>
         </div>
       </div>

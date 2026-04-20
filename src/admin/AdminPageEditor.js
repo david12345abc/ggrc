@@ -6,6 +6,7 @@ import Flag from '../components/Flags';
 import SectionPreview from './SectionPreview';
 import SectionEditor from './SectionEditor';
 import AddSectionModal from './AddSectionModal';
+import useAdminT from './i18n';
 
 const LANGS = [
   { code: 'en', label: 'EN' },
@@ -21,6 +22,7 @@ const AdminPageEditor = () => {
   const [editingSection, setEditingSection] = useState(null);
   const [addAtIndex, setAddAtIndex] = useState(null);
   const [lang, setLang] = useState('en');
+  const t = useAdminT();
 
   const loadPage = useCallback(() => {
     setLoading(true);
@@ -35,7 +37,7 @@ const AdminPageEditor = () => {
   useEffect(() => { loadPage(); }, [loadPage]);
 
   const handleDelete = async (sectionId) => {
-    if (!window.confirm('Are you sure you want to delete this section?')) return;
+    if (!window.confirm(t.pageEditor.deleteSectionConfirm)) return;
     await adminApi.deleteSection(sectionId);
     loadPage();
   };
@@ -62,8 +64,8 @@ const AdminPageEditor = () => {
     loadPage();
   };
 
-  if (loading) return <div className="admin-loading">Loading page...</div>;
-  if (!page) return <div className="admin-empty">Page not found</div>;
+  if (loading) return <div className="admin-loading">{t.pageEditor.loadingPage}</div>;
+  if (!page) return <div className="admin-empty">{t.pageEditor.pageNotFound}</div>;
 
   return (
     <div className="admin-page-editor">
@@ -83,7 +85,7 @@ const AdminPageEditor = () => {
       </div>
 
       <div className="admin-page-editor__sections">
-        <AddButton onClick={() => setAddAtIndex(0)} label="Add section at top" />
+        <AddButton onClick={() => setAddAtIndex(0)} label={t.pageEditor.addSectionTop} fallbackLabel={t.pageEditor.addSection} />
 
         {sections.map((section, index) => (
           <React.Fragment key={section.id}>
@@ -92,16 +94,16 @@ const AdminPageEditor = () => {
                 <span className="admin-section-toolbar__type">{section.section_type}</span>
                 <span className="admin-section-toolbar__title">{section.title}</span>
                 <div className="admin-section-toolbar__actions">
-                  <button onClick={() => handleMoveUp(section, index)} disabled={index === 0} title="Move up">
+                  <button onClick={() => handleMoveUp(section, index)} disabled={index === 0} title={t.common.moveUp}>
                     <FiChevronUp />
                   </button>
-                  <button onClick={() => handleMoveDown(section, index)} disabled={index === sections.length - 1} title="Move down">
+                  <button onClick={() => handleMoveDown(section, index)} disabled={index === sections.length - 1} title={t.common.moveDown}>
                     <FiChevronDown />
                   </button>
-                  <button onClick={() => setEditingSection(section)} title="Edit">
+                  <button onClick={() => setEditingSection(section)} title={t.common.edit}>
                     <FiEdit2 />
                   </button>
-                  <button onClick={() => handleDelete(section.id)} className="admin-btn--danger-icon" title="Delete">
+                  <button onClick={() => handleDelete(section.id)} className="admin-btn--danger-icon" title={t.common.delete}>
                     <FiTrash2 />
                   </button>
                 </div>
@@ -109,13 +111,13 @@ const AdminPageEditor = () => {
               <SectionPreview section={section} />
             </div>
 
-            <AddButton onClick={() => setAddAtIndex(index + 1)} />
+            <AddButton onClick={() => setAddAtIndex(index + 1)} fallbackLabel={t.pageEditor.addSection} />
           </React.Fragment>
         ))}
 
         {sections.length === 0 && (
           <div className="admin-empty" style={{ padding: '40px 20px' }}>
-            No content for <strong>{lang.toUpperCase()}</strong> yet. Click + to add sections.
+            {t.pageEditor.noContentForLang(lang.toUpperCase())}
           </div>
         )}
       </div>
@@ -141,9 +143,9 @@ const AdminPageEditor = () => {
   );
 };
 
-const AddButton = ({ onClick, label }) => (
+const AddButton = ({ onClick, label, fallbackLabel }) => (
   <div className="admin-add-row">
-    <button className="admin-add-btn" onClick={onClick} title={label || 'Add section'}>
+    <button className="admin-add-btn" onClick={onClick} title={label || fallbackLabel}>
       <FiPlus />
     </button>
   </div>

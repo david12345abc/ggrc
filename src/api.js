@@ -55,6 +55,7 @@ export const publicApi = {
   getPages: () => api.get('/pages/'),
   getPage: (slug, lang) => api.get(`/pages/${slug}/`, { params: lang ? { lang } : {} }),
   getSiteSettings: () => api.get('/site-settings/'),
+  sendContactMessage: (data) => api.post('/contact/', data),
 };
 
 export const adminApi = {
@@ -81,7 +82,11 @@ export const adminApi = {
   },
 
   getSiteSettings: () => api.get('/admin/site-settings/'),
-  updateSiteSettings: (data) => api.patch('/admin/site-settings/', data),
+  updateSiteSettings: (data) => api.patch('/admin/site-settings/', sendFormData(data)),
+
+  getEmailSettings: () => api.get('/admin/email-settings/'),
+  updateEmailSettings: (data) => api.patch('/admin/email-settings/', data),
+  sendTestEmail: (to) => api.post('/admin/email-settings/test/', to ? { to } : {}),
 
   getUsers: () => api.get('/admin/users/'),
   createUser: (data) => api.post('/admin/users/', data),

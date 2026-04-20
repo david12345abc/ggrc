@@ -1,0 +1,379 @@
+/* ── Site settings editor ──────────────────────────────────────── */
+.site-settings-editor {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 28px 60px;
+}
+
+.site-settings-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.site-settings-editor__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.site-settings-editor__subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
+.sse-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.sse-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 4px 14px rgba(38, 11, 74, 0.04);
+}
+
+.sse-card--wide {
+  grid-column: 1 / -1;
+}
+
+.sse-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin: 0 0 18px;
+}
+
+.sse-field {
+  margin-bottom: 16px;
+}
+
+.sse-field:last-child {
+  margin-bottom: 0;
+}
+
+.sse-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.sse-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.sse-input:focus {
+  outline: none;
+  border-color: #5B2D8E;
+  box-shadow: 0 0 0 3px rgba(91, 45, 142, 0.15);
+}
+
+.sse-hint {
+  display: block;
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* Phones list */
+.sse-phones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.sse-phones__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sse-phones__empty {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.sse-phones__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.sse-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  font-size: 14px;
+}
+
+.sse-icon-btn:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.sse-icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sse-icon-btn--danger {
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.sse-icon-btn--danger:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.sse-add-btn {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* Alerts */
+.sse-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+.sse-alert--success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.sse-alert--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* Logo pickers */
+.sse-logo-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.sse-logo-picker {
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  padding: 14px 16px 16px;
+  background: #fafaf9;
+}
+
+.sse-logo-picker__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 10px;
+}
+
+.sse-logo-picker__preview {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-conic-gradient(#f3f4f6 0% 25%, #e5e7eb 0% 50%) 50% / 14px 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.sse-logo-picker__preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.sse-logo-picker__empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9ca3af;
+  font-size: 13px;
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 6px;
+}
+
+.sse-logo-picker__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Ghost button variant used by settings editor */
+.admin-btn--ghost {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.admin-btn--ghost:hover:not(:disabled) {
+  background: #f9fafb;
+  color: #111827;
+  border-color: #9ca3af;
+}
+
+/* ── Email / SMTP section ───────────────────────────────────────── */
+.sse-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.sse-card__title--plain {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 18px;
+  margin: 0 0 4px;
+  color: #111827;
+}
+
+.sse-card__hint {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+  max-width: 560px;
+}
+
+.sse-card__hint a {
+  color: #5B2D8E;
+  text-decoration: underline;
+}
+
+.sse-email-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+}
+
+.sse-field--toggles {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.sse-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sse-checkbox input {
+  width: 16px;
+  height: 16px;
+  accent-color: #5B2D8E;
+}
+
+.sse-password-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.sse-password-row .sse-input {
+  flex: 1;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  letter-spacing: 0.02em;
+}
+
+.sse-test-box {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.sse-test-box__title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.sse-test-box__hint {
+  margin: 0 0 12px;
+  color: #6b7280;
+  font-size: 12.5px;
+}
+
+.sse-test-box__row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sse-test-box__row .sse-input {
+  flex: 1 1 260px;
+}
+
+.sse-alert--compact {
+  margin-top: 12px;
+  margin-bottom: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .sse-grid {
+    grid-template-columns: 1fr;
+  }
+  .sse-logo-row {
+    grid-template-columns: 1fr;
+  }
+  .sse-email-grid {
+    grid-template-columns: 1fr;
+  }
+  .site-settings-editor {
+    padding: 18px 18px 40px;
+  }
+}

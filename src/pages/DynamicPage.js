@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useParams, useLocation } from 'react-router-dom';
 import usePageData from '../hooks/usePageData';
+import useLanguage from '../hooks/useLanguage';
 import { getImgPosition } from '../utils/imgPosition';
 import { buildSectionStyle, buildTitleStyle } from '../utils/sectionStyles';
 import Hero from '../components/Hero/Hero';
@@ -31,6 +32,8 @@ const SECTION_RENDERERS = {
   video_block: (data) => <VideoBlock key={data.id} data={data} />,
 };
 
+const HTML_TAG_RE = /<\/?[a-zA-Z][\s\S]*?>/;
+
 const TextBlock = ({ data }) => {
   if (!data) return null;
   const s = data.settings || {};
@@ -41,24 +44,25 @@ const TextBlock = ({ data }) => {
   if (s.text_color) textStyle.color = s.text_color;
   if (s.text_align) textStyle.textAlign = s.text_align;
   const hasTextStyle = Object.keys(textStyle).length > 0;
-  const bodyIsHtml = s.body_format === 'html';
+  const body = s.body || '';
+  if (!body) return null;
+  const bodyIsHtml = s.body_format === 'html' || HTML_TAG_RE.test(body);
 
   return (
     <section className="dp-text-block" style={buildSectionStyle(data)}>
       <div className="container">
-        {s.body && bodyIsHtml && (
+        {bodyIsHtml ? (
           <div
             className="dp-text-block__body dp-text-block__body--html"
             style={hasTextStyle ? textStyle : undefined}
-            dangerouslySetInnerHTML={{ __html: s.body }}
+            dangerouslySetInnerHTML={{ __html: body }}
           />
-        )}
-        {s.body && !bodyIsHtml && (
+        ) : (
           <div
             className="dp-text-block__body"
             style={hasTextStyle ? textStyle : undefined}
           >
-            {s.body}
+            {body}
           </div>
         )}
       </div>
@@ -149,23 +153,32 @@ const PAGE_TITLES = {
   contact: { en: 'Contact', ru: '\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u044b', am: '\u053f\u0561\u057a' },
 };
 
+const DP_T = {
+  en: { home: 'HOME', empty: 'This page has no content yet.' },
+  ru: { home: '\u0413\u041b\u0410\u0412\u041d\u0410\u042f', empty: '\u041d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435 \u043f\u043e\u043a\u0430 \u043d\u0435\u0442 \u0441\u043e\u0434\u0435\u0440\u0436\u0438\u043c\u043e\u0433\u043e.' },
+  am: { home: '\u0533\u053c\u053d\u0531\u054e\u0548\u0550', empty: '\u0531\u0575\u057d \u0567\u057b\u0578\u0582\u043c \u0564\u0565\u057c \u0562\u0578\u057e\u0561\u0576\u0564\u0561\u056f\u0578\u0582\u0569\u0575\u0578\u0582\u0576 \u0579\u056f\u0561:' },
+};
+
 const DynamicPage = () => {
   const { slug: paramSlug } = useParams();
   const location = useLocation();
+  const { language } = useLanguage();
   const slug = paramSlug || location.pathname.replace(/^\//, '').split('/')[0] || 'home';
   const { sections, loading } = usePageData(slug);
 
   if (loading) return <div style={{ minHeight: '100vh' }} />;
 
-  const breadcrumbTitle = PAGE_TITLES[slug]?.en || slug;
+  const langKey = PAGE_TITLES[slug] ? (PAGE_TITLES[slug][language] || PAGE_TITLES[slug].en) : slug;
+  const breadcrumbTitle = langKey;
   const isServiceDetailPage = /^service-/.test(slug);
+  const t = DP_T[language] || DP_T.en;
 
   return (
     <main className={`dynamic-page${isServiceDetailPage ? ' dynamic-page--service-detail' : ''}`}>
       {!isServiceDetailPage && (
         <nav className="dynamic-page__breadcrumb" aria-label="Breadcrumb">
           <div className="container dynamic-page__breadcrumb-inner">
-            <Link to="/" className="dynamic-page__breadcrumb-link">HOME</Link>
+            <Link to="/" className="dynamic-page__breadcrumb-link">{t.home}</Link>
             <span className="dynamic-page__breadcrumb-sep" aria-hidden> &gt; </span>
             <span className="dynamic-page__breadcrumb-current">{breadcrumbTitle.toUpperCase()}</span>
           </div>
@@ -174,7 +187,7 @@ const DynamicPage = () => {
 
       {sections.length === 0 && (
         <div className="dynamic-page__empty">
-          <p>This page has no content yet.</p>
+          <p>{t.empty}</p>
         </div>
       )}
 

@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiMenu, FiX, FiLogOut, FiUsers, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { FiMenu, FiX, FiLogOut, FiUsers, FiPlus, FiTrash2, FiSettings, FiChevronDown, FiChevronRight, FiHelpCircle } from 'react-icons/fi';
 import { publicApi, adminApi } from '../api';
 import useAuth from '../hooks/useAuth';
+import useAdminT from './i18n';
+
+const YOUR_PAGES_COLLAPSED_KEY = 'admin.sidebar.yourPagesCollapsed';
 
 const AdminLayout = ({ children }) => {
   const { user, logout } = useAuth();
@@ -10,6 +13,22 @@ const AdminLayout = ({ children }) => {
   const [pages, setPages] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [yourPagesCollapsed, setYourPagesCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(YOUR_PAGES_COLLAPSED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+  const t = useAdminT();
+
+  const toggleYourPages = () => {
+    setYourPagesCollapsed((prev) => {
+      const next = !prev;
+      try { localStorage.setItem(YOUR_PAGES_COLLAPSED_KEY, next ? '1' : '0'); } catch {}
+      return next;
+    });
+  };
 
   const loadPages = useCallback(() => {
     publicApi.getPages().then(({ data }) => setPages(data)).catch(() => {});
@@ -28,12 +47,12 @@ const AdminLayout = ({ children }) => {
   const handleDeletePage = async (e, page) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!window.confirm(`Delete page "${page.title}"? All sections will be lost.`)) return;
+    if (!window.confirm(t.layout.deletePageConfirm(page.title))) return;
     try {
       await adminApi.deletePage(page.id);
       loadPages();
     } catch (err) {
-      alert('Error: ' + (err.response?.data?.detail || err.message));
+      alert(t.layout.errorPrefix + (err.response?.data?.detail || err.message));
     }
   };
 
@@ -47,13 +66,13 @@ const AdminLayout = ({ children }) => {
     <div className="admin-layout">
       <aside className={`admin-sidebar ${sidebarOpen ? 'admin-sidebar--open' : ''}`}>
         <div className="admin-sidebar__header">
-          <span className="admin-sidebar__brand">GGRC Admin</span>
+          <span className="admin-sidebar__brand">{t.layout.brand}</span>
           <button className="admin-sidebar__close" onClick={() => setSidebarOpen(false)}>
             <FiX />
           </button>
         </div>
         <nav className="admin-sidebar__nav">
-          <div className="admin-sidebar__section-title">Pages</div>
+          <div className="admin-sidebar__section-title">{t.layout.pages}</div>
           {navPages.map((p) => (
             <NavLink
               key={p.slug}
@@ -65,53 +84,81 @@ const AdminLayout = ({ children }) => {
             </NavLink>
           ))}
 
-          <div className="admin-sidebar__section-title">
-            Your Pages
-          </div>
-          {customPages.length === 0 && (
-            <span className="admin-sidebar__empty">No pages yet</span>
+          <button
+            type="button"
+            className="admin-sidebar__section-title admin-sidebar__section-title--toggle"
+            onClick={toggleYourPages}
+            aria-expanded={!yourPagesCollapsed}
+          >
+            {yourPagesCollapsed ? <FiChevronRight /> : <FiChevronDown />}
+            <span>{t.layout.yourPages}</span>
+            {customPages.length > 0 && (
+              <span className="admin-sidebar__section-count">{customPages.length}</span>
+            )}
+          </button>
+
+          {!yourPagesCollapsed && (
+            <>
+              {customPages.length === 0 && (
+                <span className="admin-sidebar__empty">{t.layout.noPagesYet}</span>
+              )}
+              {customPages.map((p) => (
+                <NavLink
+                  key={p.slug}
+                  to={`/admin-panel/page/${p.slug}`}
+                  className={({ isActive }) => `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`}
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <span className="admin-sidebar__link-text">{p.title}</span>
+                  <button
+                    className="admin-sidebar__link-delete"
+                    onClick={(e) => handleDeletePage(e, p)}
+                    title={t.layout.deletePageTitle}
+                  >
+                    <FiTrash2 />
+                  </button>
+                </NavLink>
+              ))}
+              <button
+                className="admin-sidebar__add-page"
+                onClick={() => setShowCreateModal(true)}
+              >
+                <FiPlus /> {t.layout.newPage}
+              </button>
+            </>
           )}
-          {customPages.map((p) => (
+
+          <div className="admin-sidebar__section-title">{t.layout.settings}</div>
+          <NavLink
+            to="/admin-panel/site-settings"
+            className={({ isActive }) => `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          >
+            <FiSettings style={{ marginRight: 8 }} /> {t.layout.siteSettings}
+          </NavLink>
+
+          {user?.role === 'superadmin' && (
             <NavLink
-              key={p.slug}
-              to={`/admin-panel/page/${p.slug}`}
+              to="/admin-panel/users"
               className={({ isActive }) => `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`}
               onClick={() => setSidebarOpen(false)}
             >
-              <span className="admin-sidebar__link-text">{p.title}</span>
-              <button
-                className="admin-sidebar__link-delete"
-                onClick={(e) => handleDeletePage(e, p)}
-                title="Delete page"
-              >
-                <FiTrash2 />
-              </button>
+              <FiUsers style={{ marginRight: 8 }} /> {t.layout.users}
             </NavLink>
-          ))}
-          <button
-            className="admin-sidebar__add-page"
-            onClick={() => setShowCreateModal(true)}
-          >
-            <FiPlus /> New Page
-          </button>
-
-          {user?.role === 'superadmin' && (
-            <>
-              <div className="admin-sidebar__section-title">Management</div>
-              <NavLink
-                to="/admin-panel/users"
-                className={({ isActive }) => `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                <FiUsers style={{ marginRight: 8 }} /> Users
-              </NavLink>
-            </>
           )}
+
+          <NavLink
+            to="/admin-panel/guide"
+            className={({ isActive }) => `admin-sidebar__link ${isActive ? 'admin-sidebar__link--active' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          >
+            <FiHelpCircle style={{ marginRight: 8 }} /> {t.layout.guide}
+          </NavLink>
         </nav>
         <div className="admin-sidebar__footer">
           <span className="admin-sidebar__user">{user?.username} ({user?.role})</span>
           <button className="admin-sidebar__logout" onClick={handleLogout}>
-            <FiLogOut /> Logout
+            <FiLogOut /> {t.layout.logout}
           </button>
         </div>
       </aside>
@@ -121,7 +168,7 @@ const AdminLayout = ({ children }) => {
           <button className="admin-topbar__menu" onClick={() => setSidebarOpen(true)}>
             <FiMenu />
           </button>
-          <span className="admin-topbar__title">Admin Panel</span>
+          <span className="admin-topbar__title">{t.layout.adminPanel}</span>
         </header>
         <div className="admin-content">
           {children}
@@ -145,6 +192,7 @@ const CreatePageModal = ({ onClose, onCreated }) => {
   const [slug, setSlug] = useState('');
   const [saving, setSaving] = useState(false);
   const [autoSlug, setAutoSlug] = useState(true);
+  const t = useAdminT();
 
   const generateSlug = (text) =>
     text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -175,7 +223,7 @@ const CreatePageModal = ({ onClose, onCreated }) => {
       const msg = typeof detail === 'object'
         ? Object.values(detail).flat().join(', ')
         : detail?.detail || err.message;
-      alert('Error: ' + msg);
+      alert(t.layout.errorPrefix + msg);
     } finally {
       setSaving(false);
     }
@@ -185,41 +233,41 @@ const CreatePageModal = ({ onClose, onCreated }) => {
     <div className="admin-modal-overlay" onClick={onClose}>
       <div className="admin-modal admin-modal--sm" onClick={(e) => e.stopPropagation()}>
         <div className="admin-modal__header">
-          <h2>Create New Page</h2>
+          <h2>{t.layout.createNewPage}</h2>
           <button className="admin-modal__close" onClick={onClose}><FiX /></button>
         </div>
         <div className="admin-modal__body">
           <div className="ve-section-field">
-            <label className="ve-label">Page Title</label>
+            <label className="ve-label">{t.layout.pageTitleLabel}</label>
             <input
               className="ve-input"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="e.g. Pricing, FAQ, Gallery..."
+              placeholder={t.layout.pageTitlePlaceholder}
               autoFocus
             />
           </div>
           <div className="ve-section-field">
-            <label className="ve-label">URL Slug</label>
+            <label className="ve-label">{t.layout.urlSlugLabel}</label>
             <input
               className="ve-input"
               value={slug}
               onChange={(e) => handleSlugChange(e.target.value)}
-              placeholder="e.g. pricing"
+              placeholder={t.layout.urlSlugPlaceholder}
             />
             <small style={{ color: '#9ca3af', fontSize: 12, marginTop: 4, display: 'block' }}>
-              Page will be available at: /page/{slug || '...'}
+              {t.layout.pageAvailableAt} /page/{slug || '...'}
             </small>
           </div>
         </div>
         <div className="admin-modal__footer">
-          <button className="admin-btn" onClick={onClose}>Cancel</button>
+          <button className="admin-btn" onClick={onClose}>{t.common.cancel}</button>
           <button
             className="admin-btn admin-btn--primary"
             disabled={saving || !title.trim() || !slug.trim()}
             onClick={handleCreate}
           >
-            {saving ? 'Creating...' : 'Create Page'}
+            {saving ? t.common.creating : t.layout.createPage}
           </button>
         </div>
       </div>

@@ -3,8 +3,15 @@ import { Link } from 'react-router-dom';
 import { FiCheck } from 'react-icons/fi';
 import usePageData from '../hooks/usePageData';
 import useSiteSettings from '../hooks/useSiteSettings';
+import useLanguage from '../hooks/useLanguage';
 import { getImgPosition } from '../utils/imgPosition';
 import './AboutPage.css';
+
+const ABOUT_T = {
+  en: { home: 'HOME', title: 'ABOUT US', watch: 'Watch on YouTube' },
+  ru: { home: '\u0413\u041b\u0410\u0412\u041d\u0410\u042f', title: '\u041e \u041d\u0410\u0421', watch: '\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043d\u0430 YouTube' },
+  am: { home: '\u0533\u053c\u053d\u0531\u054e\u0548\u0550', title: '\u0544\u0535\u054f \u0544\u0531\u054d\u053b\u0546', watch: '\u0534\u056b\u057f\u0565\u056c YouTube-\u0578\u0582\u043c' },
+};
 
 const CheckList = ({ items }) => (
   <ul className="about-page__check-list">
@@ -24,6 +31,8 @@ const CheckList = ({ items }) => (
 const AboutPage = () => {
   const { getSection, loading } = usePageData('about');
   const siteSettings = useSiteSettings();
+  const { language } = useLanguage();
+  const t = ABOUT_T[language] || ABOUT_T.en;
 
   if (loading) return <div style={{ minHeight: '100vh' }} />;
 
@@ -45,9 +54,9 @@ const AboutPage = () => {
     <main className="about-page">
       <nav className="about-page__breadcrumb" aria-label="Breadcrumb">
         <div className="container about-page__breadcrumb-inner">
-          <Link to="/" className="about-page__breadcrumb-link">HOME</Link>
+          <Link to="/" className="about-page__breadcrumb-link">{t.home}</Link>
           <span className="about-page__breadcrumb-sep" aria-hidden> &gt; </span>
-          <span className="about-page__breadcrumb-current">ABOUT US</span>
+          <span className="about-page__breadcrumb-current">{t.title}</span>
         </div>
       </nav>
 
@@ -120,7 +129,7 @@ const AboutPage = () => {
                       className="about-page__video-fallback-img"
                     />
                   )}
-                  <span className="about-page__video-fallback-label">Watch on YouTube</span>
+                  <span className="about-page__video-fallback-label">{t.watch}</span>
                 </a>
               )}
             </div>

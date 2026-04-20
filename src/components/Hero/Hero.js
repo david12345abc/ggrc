@@ -1,9 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import useLanguage from '../../hooks/useLanguage';
 import { getImgPosition } from '../../utils/imgPosition';
 import './Hero.css';
 
+const HERO_T = {
+  en: { home: 'HOME', service: 'SERVICE DETAILS' },
+  ru: { home: '\u0413\u041b\u0410\u0412\u041d\u0410\u042f', service: '\u041f\u041e\u0414\u0420\u041e\u0411\u041d\u041e \u041e\u0411 \u0423\u0421\u041b\u0423\u0413\u0415' },
+  am: { home: '\u0533\u053c\u053d\u0531\u054e\u0548\u0550', service: '\u053e\u0531\u054c\u0531\u0545\u0548\u0552\u0539\u0545\u0531\u0546 \u0544\u0531\u0546\u0550\u0531\u0544\u0531\u054d\u0546\u0535\u0550' },
+};
+
 const Hero = ({ data }) => {
+  const { language } = useLanguage();
+  const t = HERO_T[language] || HERO_T.en;
   if (!data) return null;
   const s = data.settings || {};
   const heroImage = data.items?.[0];
@@ -45,9 +54,9 @@ const Hero = ({ data }) => {
         <div className="container hero__inner">
           {s.service_breadcrumb && (
             <nav className="hero__breadcrumb" aria-label="Breadcrumb">
-              <Link to="/" className="hero__breadcrumb-link">HOME</Link>
+              <Link to="/" className="hero__breadcrumb-link">{t.home}</Link>
               <span className="hero__breadcrumb-sep" aria-hidden> &gt; </span>
-              <span className="hero__breadcrumb-current">SERVICE DETAILS</span>
+              <span className="hero__breadcrumb-current">{t.service}</span>
             </nav>
           )}
           <div className="hero__row">

@@ -33,11 +33,22 @@ const SectionPreview = ({ section }) => {
     if (s.font_family) style.fontFamily = s.font_family;
     if (s.text_color) style.color = s.text_color;
     if (s.text_align) style.textAlign = s.text_align;
+    const body = s.body || '';
+    const hasTags = /<\/?[a-zA-Z][\s\S]*?>/.test(body);
+    const renderHtml = s.body_format === 'html' || hasTags;
     return (
       <div className="sp sp--text-block" style={s.bg_color ? { background: s.bg_color } : undefined}>
-        <p className="sp--text-block__body" style={Object.keys(style).length ? style : undefined}>
-          {(s.body || '').substring(0, 200)}{(s.body || '').length > 200 ? '...' : ''}
-        </p>
+        {renderHtml ? (
+          <div
+            className="sp--text-block__body dp-text-block__body dp-text-block__body--html"
+            style={Object.keys(style).length ? style : undefined}
+            dangerouslySetInnerHTML={{ __html: body }}
+          />
+        ) : (
+          <p className="sp--text-block__body" style={Object.keys(style).length ? style : undefined}>
+            {body.substring(0, 200)}{body.length > 200 ? '...' : ''}
+          </p>
+        )}
       </div>
     );
   }

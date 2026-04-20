@@ -7,6 +7,7 @@ import ScrollToTop from './components/ScrollToTop/ScrollToTop';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import DynamicPage from './pages/DynamicPage';
+import ContactPage from './pages/ContactPage';
 import AdminPanel from './admin/AdminPanel';
 import './App.css';
 
@@ -27,7 +28,7 @@ function App() {
                 <Route path="/services" element={<DynamicPage />} />
                 <Route path="/team" element={<DynamicPage />} />
                 <Route path="/blog" element={<DynamicPage />} />
-                <Route path="/contact" element={<DynamicPage />} />
+                <Route path="/contact" element={<ContactPage />} />
                 <Route path="/page/:slug" element={<DynamicPage />} />
               </Routes>
               <Footer />

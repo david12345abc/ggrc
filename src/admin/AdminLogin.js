@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import useAdminT from './i18n';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState('');
@@ -9,6 +10,7 @@ const AdminLogin = () => {
   const [submitting, setSubmitting] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const t = useAdminT();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ const AdminLogin = () => {
       await login(username, password);
       navigate('/admin-panel');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed');
+      setError(err.response?.data?.detail || t.login.loginFailed);
     } finally {
       setSubmitting(false);
     }
@@ -27,12 +29,12 @@ const AdminLogin = () => {
   return (
     <div className="admin-login">
       <form className="admin-login__form" onSubmit={handleSubmit}>
-        <div className="admin-login__logo">GGRC Admin</div>
+        <div className="admin-login__logo">{t.login.title}</div>
         {error && <div className="admin-login__error">{error}</div>}
         <input
           className="admin-input"
           type="text"
-          placeholder="Username"
+          placeholder={t.login.username}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
@@ -40,16 +42,16 @@ const AdminLogin = () => {
         <input
           className="admin-input"
           type="password"
-          placeholder="Password"
+          placeholder={t.login.password}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
         <button className="admin-btn admin-btn--primary" type="submit" disabled={submitting}>
-          {submitting ? 'Signing in...' : 'Sign In'}
+          {submitting ? t.login.signingIn : t.login.signIn}
         </button>
         <Link to="/" className="admin-login__home-link">
-          &larr; Back to website
+          {t.login.backToSite}
         </Link>
       </form>
     </div>
